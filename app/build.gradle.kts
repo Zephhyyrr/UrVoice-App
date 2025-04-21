@@ -1,3 +1,5 @@
+import org.gradle.api.internal.DocumentationRegistry.BASE_URL
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,6 +21,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"${BASE_URL}\"")
     }
 
     buildTypes {
@@ -39,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -93,6 +98,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    implementation (libs.retrofit2.adapter.rxjava3)
+    implementation (libs.rxjava)
+    implementation (libs.rxandroid)
 
     // Paging3
     implementation(libs.androidx.paging.runtime)
