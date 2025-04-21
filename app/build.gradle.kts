@@ -41,6 +41,7 @@ android {
         compose = true
     }
 }
+
 subprojects {
     tasks.withType<JavaCompile> {
         options.compilerArgs.add("-Xlint:-deprecation")
@@ -65,9 +66,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // ViewModel
+    // ViewModel and LiveData
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+
+    // Data Store
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.preferences.core)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
