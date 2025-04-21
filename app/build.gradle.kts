@@ -2,19 +2,19 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "com.firman.capstone.urvoice"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.firman.capstone.urvoice"
         minSdk = 24
-        //noinspection EditedTargetSdkVersion
-        targetSdk = 36
+        //noinspection OldTargetApi,EditedTargetSdkVersion
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -39,6 +39,11 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+subprojects {
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.add("-Xlint:-deprecation")
     }
 }
 
@@ -83,6 +88,10 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+
+    // Paging3
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     // Accompanist - System UI Controller
     implementation(libs.accompanist.systemuicontroller)
