@@ -1,0 +1,61 @@
+package com.firman.capstone.urvoice.data.repository.login
+
+import android.util.Log
+import com.firman.capstone.urvoice.data.local.datastore.AuthPreferences
+import com.firman.capstone.urvoice.data.remote.models.LoginResponse
+import com.firman.capstone.urvoice.data.remote.service.LoginService
+import com.firman.capstone.urvoice.utils.ResultState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+class LoginRepositoryImpl @Inject constructor(
+    private val loginService: LoginService,
+    private val authPreferences: AuthPreferences
+) : LoginRepository {
+
+    override suspend fun login(email: String, password: String): ResultState<LoginResponse> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val currentToken = authPreferences.authToken.firstOrNull()
+                Log.d("AuthDebug", "Token saat ini sebelum login: $currentToken")
+
+                val response = loginService.login(email, password)
+                if (response.success) {
+                    response.data?.refreshToken?.let { refreshToken ->
+                        authPreferences.saveAuthToken(refreshToken)
+                        Log.d("AuthDebug", "Token baru setelah login: $refreshToken")
+                    }
+                    ResultState.Success(response, response.message)
+                } else {
+                    ResultState.Error(response.message ?: "Login failed")
+                }
+            } catch (e: Exception) {
+                ResultState.Error(e.message ?: "Unknown error occurred")
+            }
+        }
+    }
+
+    suspend fun refreshSession(email: String, password: String): ResultState<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val currentToken = authPreferences.authToken.firstOrNull()
+                Log.d("AuthDebug", "Token saat ini sebelum refresh: $currentToken")
+
+                val response = loginService.login(email, password)
+                if (response.success) {
+                    response.data?.refreshToken?.let { refreshToken ->
+                        authPreferences.saveAuthToken(refreshToken)
+                        Log.d("AuthDebug", "Token baru setelah refresh: $refreshToken")
+                    }
+                    ResultState.Success(Unit, "Session refreshed")
+                } else {
+                    ResultState.Error(response.message ?: "Refresh session failed")
+                }
+            } catch (e: Exception) {
+                ResultState.Error(e.message ?: "Unknown error during refresh")
+            }
+        }
+    }
+}

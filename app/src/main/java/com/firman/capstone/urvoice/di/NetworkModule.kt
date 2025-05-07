@@ -2,7 +2,8 @@ package com.firman.capstone.urvoice.di
 
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
-import com.firman.capstone.urvoice.data.remote.service.ApiService
+import com.firman.capstone.urvoice.BuildConfig
+import com.firman.capstone.urvoice.data.remote.service.LoginService
 import com.firman.capstone.urvoice.utils.ApiConstant
 import dagger.Module
 import dagger.Provides
@@ -13,6 +14,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -27,10 +29,17 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(chuckerInterceptor: ChuckerInterceptor): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(chuckerInterceptor)
-            .build()
+    fun provideOkHttpClient(
+        chuckerInterceptor: ChuckerInterceptor
+    ): OkHttpClient {
+        val builder = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+
+        if (BuildConfig.DEBUG) {
+            builder.addInterceptor(chuckerInterceptor)
+        }
+        return builder.build()
     }
 
     @Provides
@@ -46,7 +55,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): ApiService {
-        return retrofit.create(ApiService::class.java)
+    fun provideLoginService(retrofit: Retrofit): LoginService {
+        return retrofit.create(LoginService::class.java)
     }
 }

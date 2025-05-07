@@ -1,11 +1,10 @@
-import org.gradle.api.internal.DocumentationRegistry.BASE_URL
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -22,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"${BASE_URL}\"")
+        buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
     }
 
     buildTypes {
@@ -35,11 +34,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -54,15 +53,17 @@ subprojects {
 }
 
 dependencies {
-
+    // Core & Compose UI
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
-//    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,13 +72,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // ViewModel and LiveData
+    // Navigation & Serialization
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    // ViewModel & LiveData
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Data Store
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences.core)
+    implementation(libs.androidx.datastore.preferences)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -86,7 +92,7 @@ dependencies {
     implementation(libs.androidx.room.rxjava3)
     ksp(libs.androidx.room.compiler)
 
-    // Dagger Hilt
+    // Dagger Hilt (Dependency Injection)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     ksp(libs.dagger.compiler)
@@ -94,28 +100,38 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
 
-    // Retrofit
+    // Networking (Retrofit & RxJava)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
-    implementation (libs.retrofit2.adapter.rxjava3)
-    implementation (libs.rxjava)
-    implementation (libs.rxandroid)
+    implementation(libs.retrofit2.adapter.rxjava3)
+    implementation(libs.rxjava)
+    implementation(libs.rxandroid)
 
-    // Paging3
+    // Paging 3
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 
-    // Accompanist - System UI Controller
+    // Accompanist Utilities
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 
-    // Chucker (Debug HTTP)
+    // Chucker (Network Debugging)
     debugImplementation(libs.library)
     releaseImplementation(libs.library.no.op)
+    implementation(libs.okhttp)
 
-    // Lottie (Animation)
+    // Loading Button
+    implementation (libs.ssjetpackcomposeprogressbutton)
+
+    // Lottie Animation
     implementation(libs.lottie.compose)
     implementation(libs.lottie)
 
+    // Shimmer
+    implementation(libs.compose.shimmer)
 
+    // View Pager Onboarding
+    implementation(libs.foundation.pager)
 }
