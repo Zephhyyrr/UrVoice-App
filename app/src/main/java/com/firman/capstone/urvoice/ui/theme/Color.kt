@@ -2,8 +2,6 @@ package com.firman.capstone.urvoice.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-
-
 val whiteBackground = Color(0xFFF5F4FF)
 val primaryColor = Color(0xFF60B5FF)
 val secondaryColor = Color(0xFFAFDDFF)

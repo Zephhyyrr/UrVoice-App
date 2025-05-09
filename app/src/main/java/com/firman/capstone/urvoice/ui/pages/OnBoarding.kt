@@ -37,7 +37,6 @@ import com.firman.capstone.urvoice.R
 import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
-import com.firman.capstone.urvoice.ui.theme.buttonShape
 import com.firman.capstone.urvoice.ui.theme.primaryColor
 import com.firman.capstone.urvoice.ui.theme.textColor
 import com.firman.capstone.urvoice.ui.theme.whiteBackground
@@ -48,7 +47,6 @@ import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonType
-import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSCustomLoadingEffect
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSJetPackComposeProgressButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -313,7 +311,7 @@ fun OnBoardingScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun OnBoardingPreview() {
     UrVoiceTheme {
