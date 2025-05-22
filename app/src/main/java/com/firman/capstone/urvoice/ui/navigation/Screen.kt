@@ -11,6 +11,9 @@ sealed class Screen(val route: String) {
     object OnBoarding : Screen("onboarding")
 
     @Serializable
+    object Sign: Screen ("sign")
+
+    @Serializable
     object Login : Screen("login")
 
     @Serializable

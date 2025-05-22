@@ -10,7 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.firman.capstone.urvoice.ui.navigation.Screen
+import com.firman.capstone.urvoice.ui.pages.HomeScreen
+import com.firman.capstone.urvoice.ui.pages.LoginScreen
 import com.firman.capstone.urvoice.ui.pages.OnBoardingScreen
+import com.firman.capstone.urvoice.ui.pages.SignScreen
 import com.firman.capstone.urvoice.ui.pages.SplashScreen
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
 
@@ -30,7 +33,23 @@ fun UrVoiceApp() {
                 SplashScreen(navController)
             }
             composable(Screen.OnBoarding.route) {
-                OnBoardingScreen(navController, onFinishOnboarding = {})
+                OnBoardingScreen(
+                    navController = navController,
+                    onFinishOnboarding = {
+                        navController.navigate(Screen.Sign.route) {
+                            popUpTo(Screen.OnBoarding.route) { inclusive = true }
+                        }
+                    },
+                )
+            }
+            composable(Screen.Sign.route) {
+                SignScreen(navController)
+            }
+            composable(Screen.Login.route) {
+                LoginScreen(navController)
+            }
+            composable(Screen.Home.route) {
+                HomeScreen(navController)
             }
         }
     }

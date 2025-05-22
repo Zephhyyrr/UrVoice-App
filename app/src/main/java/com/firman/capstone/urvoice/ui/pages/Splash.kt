@@ -11,15 +11,20 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.firman.capstone.urvoice.R
+import com.firman.capstone.urvoice.ui.navigation.Screen
 import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
+import com.firman.capstone.urvoice.ui.viewmodel.SplashViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(navController: NavController, viewModel: SplashViewModel = hiltViewModel()) {
     val isInPreview = LocalInspectionMode.current
+    val appStartupState by viewModel.appStartupState.collectAsState()
 
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.splashanimation)
@@ -36,6 +41,29 @@ fun SplashScreen(navController: NavController) {
             }
         }
     }
+
+    LaunchedEffect(progress, appStartupState) {
+        if (progress >= 1f) {
+            when {
+                !appStartupState.isOnboardingCompleted -> {
+                    navController.navigate("onboarding") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+                appStartupState.isLoggedIn -> {
+                    navController.navigate("home") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+                else -> {
+                    navController.navigate("login") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
+
 
     Box(
         modifier = Modifier

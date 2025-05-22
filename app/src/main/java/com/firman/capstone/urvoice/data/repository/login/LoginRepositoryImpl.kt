@@ -2,6 +2,7 @@ package com.firman.capstone.urvoice.data.repository.login
 
 import android.util.Log
 import com.firman.capstone.urvoice.data.local.datastore.AuthPreferences
+import com.firman.capstone.urvoice.data.remote.models.LoginRequest
 import com.firman.capstone.urvoice.data.remote.models.LoginResponse
 import com.firman.capstone.urvoice.data.remote.service.LoginService
 import com.firman.capstone.urvoice.utils.ResultState
@@ -21,7 +22,9 @@ class LoginRepositoryImpl @Inject constructor(
                 val currentToken = authPreferences.authToken.firstOrNull()
                 Log.d("AuthDebug", "Token saat ini sebelum login: $currentToken")
 
-                val response = loginService.login(email, password)
+                val request = LoginRequest(email = email, password = password)
+                val response = loginService.login(request)
+
                 if (response.success) {
                     response.data?.refreshToken?.let { refreshToken ->
                         authPreferences.saveAuthToken(refreshToken)
@@ -31,7 +34,9 @@ class LoginRepositoryImpl @Inject constructor(
                 } else {
                     ResultState.Error(response.message ?: "Login failed")
                 }
+
             } catch (e: Exception) {
+                Log.e("LoginError", "Exception during login", e)
                 ResultState.Error(e.message ?: "Unknown error occurred")
             }
         }
@@ -43,7 +48,9 @@ class LoginRepositoryImpl @Inject constructor(
                 val currentToken = authPreferences.authToken.firstOrNull()
                 Log.d("AuthDebug", "Token saat ini sebelum refresh: $currentToken")
 
-                val response = loginService.login(email, password)
+                val request = LoginRequest(email = email, password = password)
+                val response = loginService.login(request)
+
                 if (response.success) {
                     response.data?.refreshToken?.let { refreshToken ->
                         authPreferences.saveAuthToken(refreshToken)
@@ -53,7 +60,9 @@ class LoginRepositoryImpl @Inject constructor(
                 } else {
                     ResultState.Error(response.message ?: "Refresh session failed")
                 }
+
             } catch (e: Exception) {
+                Log.e("RefreshError", "Exception during session refresh", e)
                 ResultState.Error(e.message ?: "Unknown error during refresh")
             }
         }

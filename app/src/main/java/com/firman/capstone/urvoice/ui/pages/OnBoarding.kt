@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.firman.capstone.urvoice.R
 import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
@@ -41,6 +42,7 @@ import com.firman.capstone.urvoice.ui.theme.primaryColor
 import com.firman.capstone.urvoice.ui.theme.textColor
 import com.firman.capstone.urvoice.ui.theme.whiteBackground
 import com.firman.capstone.urvoice.ui.theme.whiteColor
+import com.firman.capstone.urvoice.ui.viewmodel.OnBoardingViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -133,7 +135,7 @@ fun ButtonRow(
                 horizontalArrangement = Arrangement.Center
             ) {
                 SSJetPackComposeProgressButton(
-                    type = SSButtonType.CUSTOM,
+                    type = SSButtonType.CIRCLE,
                     width = 380.dp,
                     height = 50.dp,
                     buttonState = nextButtonState,
@@ -142,7 +144,6 @@ fun ButtonRow(
                             nextButtonState = SSButtonState.LOADING
                             delay(1000)
                             nextButtonState = SSButtonState.SUCCESS
-                            delay(1000)
                             onFinishOnboarding()
                         }
                     },
@@ -265,7 +266,65 @@ fun ButtonRow(
 @Composable
 fun OnBoardingScreen(
     navController: NavController,
-    onFinishOnboarding: () -> Unit
+    onFinishOnboarding: () -> Unit,
+    viewModel: OnBoardingViewModel = hiltViewModel()
+) {
+    val pagerState = rememberPagerState(initialPage = 0)
+
+    fun completeOnboarding() {
+        viewModel.completeOnBoarding()
+        onFinishOnboarding()
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HorizontalPager(
+            count = onBoardModel.size,
+            state = pagerState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+        ) { page ->
+            OnBoardItem(page = onBoardModel[page])
+        }
+        Row(
+            modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(onBoardModel.size) { index ->
+                val isSelected = pagerState.currentPage == index
+                Box(
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .width(if (isSelected) 20.dp else 10.dp)
+                        .height(10.dp)
+                        .border(
+                            width = 0.5.dp,
+                            color = textColor,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .background(
+                            color = if (isSelected) primaryColor else Color.White,
+                            shape = CircleShape
+                        )
+                )
+            }
+        }
+        ButtonRow(
+            pagerState = pagerState,
+            onFinishOnboarding = ::completeOnboarding
+        )
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun OnBoardingScreenPreview(
+    onFinishOnboarding: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState(initialPage = 0)
 
@@ -307,16 +366,19 @@ fun OnBoardingScreen(
                 )
             }
         }
-        ButtonRow(pagerState = pagerState, onFinishOnboarding = onFinishOnboarding)
+        ButtonRow(
+            pagerState = pagerState,
+            onFinishOnboarding = onFinishOnboarding
+        )
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Preview(showBackground = true)
 @Composable
 fun OnBoardingPreview() {
     UrVoiceTheme {
-        OnBoardingScreen(
-            navController = NavController(LocalContext.current),
+        OnBoardingScreenPreview(
             onFinishOnboarding = {}
         )
     }

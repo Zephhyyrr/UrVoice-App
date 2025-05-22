@@ -2,6 +2,7 @@ package com.firman.capstone.urvoice.di
 
 import android.content.Context
 import com.firman.capstone.urvoice.data.local.datastore.AuthPreferences
+import com.firman.capstone.urvoice.data.local.datastore.OnboardingPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,5 +17,11 @@ object LocalModule {
     @Singleton
     fun provideAuthPreferences(@ApplicationContext context: Context): AuthPreferences {
         return AuthPreferences(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOnBoardingPreferences(@ApplicationContext context: Context): OnboardingPreferences{
+        return OnboardingPreferences(context)
     }
 }

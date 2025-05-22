@@ -12,7 +12,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-private val Context.dataStore by preferencesDataStore(name = "auth")
+private val Context.dataStore by preferencesDataStore(name = "auth_preferences")
+
 class AuthPreferences @Inject constructor(@ApplicationContext private val context: Context) {
 
     companion object {
@@ -32,8 +33,8 @@ class AuthPreferences @Inject constructor(@ApplicationContext private val contex
         }
     }
 
-    suspend fun clearSession(){
-        withContext(Dispatchers.IO){
+    suspend fun clearSession() {
+        withContext(Dispatchers.IO) {
             context.dataStore.edit { preferences ->
                 preferences.remove(TOKEN_KEY)
             }
