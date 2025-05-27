@@ -2,7 +2,7 @@ package com.firman.capstone.urvoice.data.repository.login
 
 import android.util.Log
 import com.firman.capstone.urvoice.data.local.datastore.AuthPreferences
-import com.firman.capstone.urvoice.data.remote.models.LoginRequest
+import com.firman.capstone.urvoice.data.remote.request.LoginRequest
 import com.firman.capstone.urvoice.data.remote.models.LoginResponse
 import com.firman.capstone.urvoice.data.remote.service.LoginService
 import com.firman.capstone.urvoice.utils.ResultState

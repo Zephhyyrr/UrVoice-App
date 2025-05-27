@@ -4,6 +4,7 @@ import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.firman.capstone.urvoice.BuildConfig
 import com.firman.capstone.urvoice.data.remote.service.LoginService
+import com.firman.capstone.urvoice.data.remote.service.RegisterService
 import com.firman.capstone.urvoice.utils.ApiConstant
 import dagger.Module
 import dagger.Provides
@@ -57,5 +58,11 @@ object NetworkModule {
     @Singleton
     fun provideLoginService(retrofit: Retrofit): LoginService {
         return retrofit.create(LoginService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterService(retrofit: Retrofit): RegisterService{
+        return retrofit.create(RegisterService::class.java)
     }
 }

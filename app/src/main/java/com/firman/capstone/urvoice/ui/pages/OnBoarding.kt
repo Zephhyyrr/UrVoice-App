@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,27 +56,30 @@ import kotlinx.coroutines.launch
 
 data class OnBoardModel(
     val imageRes: Int,
-    val title: String,
-    val description: String
+    val titleRes: Int,
+    val descriptionRes: Int
 )
 
-val onBoardModel = listOf(
-    OnBoardModel(
-        title = "Selamat Datang di\nUrVoice",
-        description = "Kami menyediakan speech-to-text dalam Bahasa Inggris dan koreksi grammar yang membantu Anda meningkatkan kemampuan public speaking dalam Bahasa Inggris",
-        imageRes = R.drawable.iv_onboarding_1
-    ),
-    OnBoardModel(
-        title = "Aplikasi Untuk Menganalisis Speaking Anda",
-        description = "Analisis speaking Anda dengan menggunakan teknologi Generative AI",
-        imageRes = R.drawable.iv_onboarding_2
-    ),
-    OnBoardModel(
-        title = "Ayo Tingkatkan Percaya Diri Bicara Bahasa Inggris Anda",
-        description = "Ayo Mulai Sekarang dan tingkatkan percaya diri Anda dalam berbicara Bahasa Inggris",
-        imageRes = R.drawable.iv_onboarding_3
+@Composable
+fun getOnBoardModel(): List<OnBoardModel> {
+    return listOf(
+        OnBoardModel(
+            titleRes = R.string.onboarding_title_1,
+            descriptionRes = R.string.onboarding_description_1,
+            imageRes = R.drawable.iv_onboarding_1
+        ),
+        OnBoardModel(
+            titleRes = R.string.onboarding_title_2,
+            descriptionRes = R.string.onboarding_description_2,
+            imageRes = R.drawable.iv_onboarding_2
+        ),
+        OnBoardModel(
+            titleRes = R.string.onboarding_title_3,
+            descriptionRes = R.string.onboarding_description_3,
+            imageRes = R.drawable.iv_onboarding_3
+        )
     )
-)
+}
 
 @Composable
 fun OnBoardItem(page: OnBoardModel) {
@@ -86,13 +90,13 @@ fun OnBoardItem(page: OnBoardModel) {
     ) {
         Image(
             painter = painterResource(id = page.imageRes),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.onboarding_image_desc),
             modifier = Modifier
                 .height(350.dp)
                 .width(350.dp)
         )
         Text(
-            text = page.title,
+            text = stringResource(id = page.titleRes),
             modifier = Modifier.padding(horizontal = 15.dp, vertical = 19.dp),
             style = TextStyle(
                 fontFamily = PoppinsSemiBold,
@@ -102,7 +106,7 @@ fun OnBoardItem(page: OnBoardModel) {
             )
         )
         Text(
-            text = page.description,
+            text = stringResource(id = page.descriptionRes),
             modifier = Modifier.padding(horizontal = 15.dp),
             style = TextStyle(
                 fontFamily = PoppinsRegular,
@@ -118,6 +122,7 @@ fun OnBoardItem(page: OnBoardModel) {
 @Composable
 fun ButtonRow(
     pagerState: PagerState,
+    onBoardModel: List<OnBoardModel>,
     onFinishOnboarding: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -156,7 +161,7 @@ fun ButtonRow(
                         contentColor = whiteColor,
                         disabledContainerColor = primaryColor,
                     ),
-                    text = "Mulai Sekarang",
+                    text = stringResource(R.string.button_start_now),
                     textModifier = Modifier,
                     fontSize = 14.sp,
                     fontFamily = PoppinsSemiBold
@@ -190,7 +195,7 @@ fun ButtonRow(
                         containerColor = whiteBackground,
                         contentColor = primaryColor
                     ),
-                    text = "Kembali",
+                    text = stringResource(R.string.button_back),
                     textModifier = Modifier,
                     fontSize = 14.sp,
                     fontFamily = PoppinsSemiBold
@@ -218,7 +223,7 @@ fun ButtonRow(
                         contentColor = whiteColor,
                         disabledContainerColor = primaryColor,
                     ),
-                    text = "Selanjutnya",
+                    text = stringResource(R.string.button_next),
                     textModifier = Modifier,
                     fontSize = 14.sp,
                     fontFamily = PoppinsSemiBold
@@ -246,13 +251,12 @@ fun ButtonRow(
                     assetColor = whiteColor,
                     successIconPainter = null,
                     failureIconPainter = null,
-
                     colors = ButtonDefaults.buttonColors(
                         containerColor = primaryColor,
                         contentColor = whiteColor,
                         disabledContainerColor = primaryColor,
                     ),
-                    text = "Selanjutnya",
+                    text = stringResource(R.string.button_next),
                     textModifier = Modifier,
                     fontSize = 14.sp,
                     fontFamily = PoppinsSemiBold
@@ -270,6 +274,7 @@ fun OnBoardingScreen(
     viewModel: OnBoardingViewModel = hiltViewModel()
 ) {
     val pagerState = rememberPagerState(initialPage = 0)
+    val onBoardModel = getOnBoardModel()
 
     fun completeOnboarding() {
         viewModel.completeOnBoarding()
@@ -316,6 +321,7 @@ fun OnBoardingScreen(
         }
         ButtonRow(
             pagerState = pagerState,
+            onBoardModel = onBoardModel,
             onFinishOnboarding = ::completeOnboarding
         )
     }
@@ -327,6 +333,7 @@ fun OnBoardingScreenPreview(
     onFinishOnboarding: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState(initialPage = 0)
+    val onBoardModel = getOnBoardModel()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -368,6 +375,7 @@ fun OnBoardingScreenPreview(
         }
         ButtonRow(
             pagerState = pagerState,
+            onBoardModel = onBoardModel,
             onFinishOnboarding = onFinishOnboarding
         )
     }

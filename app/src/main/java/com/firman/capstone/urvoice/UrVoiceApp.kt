@@ -13,6 +13,7 @@ import com.firman.capstone.urvoice.ui.navigation.Screen
 import com.firman.capstone.urvoice.ui.pages.HomeScreen
 import com.firman.capstone.urvoice.ui.pages.LoginScreen
 import com.firman.capstone.urvoice.ui.pages.OnBoardingScreen
+import com.firman.capstone.urvoice.ui.pages.RegisterScreen
 import com.firman.capstone.urvoice.ui.pages.SignScreen
 import com.firman.capstone.urvoice.ui.pages.SplashScreen
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
@@ -47,6 +48,9 @@ fun UrVoiceApp() {
             }
             composable(Screen.Login.route) {
                 LoginScreen(navController)
+            }
+            composable(Screen.Register.route) {
+                RegisterScreen(navController)
             }
             composable(Screen.Home.route) {
                 HomeScreen(navController)

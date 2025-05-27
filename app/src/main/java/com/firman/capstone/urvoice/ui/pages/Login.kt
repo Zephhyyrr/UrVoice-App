@@ -27,13 +27,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -60,22 +60,10 @@ import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSJetPackComposeProgres
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-data class LoginModel(
-    val title: String,
-    val description: String
-)
-
-val loginModel = LoginModel(
-    title = "Login Disini",
-    description = "Selamat Datang Kembali, \nAyo Login"
-)
-
 @Composable
-fun LoginItem(page: LoginModel) {
+fun LoginItem() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,7 +72,7 @@ fun LoginItem(page: LoginModel) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = page.title,
+            text = stringResource(R.string.login_title),
             modifier = Modifier
                 .padding(horizontal = 15.dp)
                 .padding(top = 193.dp),
@@ -96,8 +84,8 @@ fun LoginItem(page: LoginModel) {
             )
         )
         Text(
-            text = page.description,
-            modifier = Modifier.padding(horizontal = 15.dp, vertical = 15.dp),
+            text = stringResource(R.string.login_description),
+            modifier = Modifier.padding(horizontal = 15.dp, vertical = 16.dp),
             style = TextStyle(
                 fontFamily = PoppinsSemiBold,
                 fontSize = 20.sp,
@@ -122,9 +110,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
     val passwordSubject = remember { BehaviorSubject.createDefault("") }
     val compositeDisposable = remember { CompositeDisposable() }
     val loginState by viewModel.loginState.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    // Reset login state when the screen is first loaded
     LaunchedEffect(Unit) {
         viewModel.resetLoginState()
     }
@@ -134,9 +121,11 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             is ResultState.Initial -> {
                 loginButtonState = SSButtonState.IDLE
             }
+
             is ResultState.Loading -> {
                 loginButtonState = SSButtonState.LOADING
             }
+
             is ResultState.Success -> {
                 loginButtonState = SSButtonState.SUCCESS
                 val loginData = (loginState as ResultState.Success).data.data
@@ -145,8 +134,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                     viewModel.saveUserCredentials(email, password, token)
                 } else {
                     Toast.makeText(
-                        navController.context,
-                        "Gagal menyimpan token, token tidak ditemukan.",
+                        context,
+                        context.getString(R.string.token_save_failed),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -160,11 +149,12 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                     }
                 }, 2000)
             }
+
             is ResultState.Error -> {
                 loginButtonState = SSButtonState.FAILURE
                 val errorMessage = (loginState as ResultState.Error).errorMessage
                 Toast.makeText(
-                    navController.context,
+                    context,
                     errorMessage,
                     Toast.LENGTH_SHORT
                 ).show()
@@ -176,12 +166,6 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
         }
     }
 
-    fun performLogin() {
-        if (email.isNotEmpty() && password.isNotEmpty()) {
-            viewModel.login(email, password)
-        }
-    }
-
     DisposableEffect(Unit) {
         val emailObservable = emailSubject
             .debounce(300, TimeUnit.MILLISECONDS)
@@ -189,9 +173,9 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             .subscribe { emailInput ->
                 if (loginAttempted) {
                     emailError = if (emailInput.isEmpty()) {
-                        "Email tidak boleh kosong"
+                        context.getString(R.string.email_empty_error)
                     } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
-                        "Format email tidak valid"
+                        context.getString(R.string.email_invalid_error)
                     } else {
                         null
                     }
@@ -203,9 +187,9 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             .subscribe { passwordInput ->
                 if (loginAttempted) {
                     passwordError = if (passwordInput.isEmpty()) {
-                        "Password tidak boleh kosong"
-                    } else if (passwordInput.length < 4) {
-                        "Password minimal 4 karakter"
+                        context.getString(R.string.password_empty_error)
+                    } else if (passwordInput.length < 8) {
+                        context.getString(R.string.password_min_length_error)
                     } else {
                         null
                     }
@@ -226,7 +210,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             .padding(horizontal = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LoginItem(page = loginModel)
+        LoginItem()
 
         OutlinedTextField(
             value = email,
@@ -234,7 +218,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 email = it
                 emailSubject.onNext(it)
             },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.email_label)) },
             isError = emailError != null,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier
@@ -269,7 +253,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 password = it
                 passwordSubject.onNext(it)
             },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password_label)) },
             isError = passwordError != null,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -291,14 +275,14 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                     if (passwordVisible) {
                         Icon(
                             imageVector = Icons.Filled.Close,
-                            contentDescription = "Sembunyikan password",
+                            contentDescription = stringResource(R.string.hide_password),
                             tint = primaryColor,
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_eye_primary),
-                            contentDescription = "Tampilkan password",
+                            contentDescription = stringResource(R.string.show_password),
                             tint = primaryColor,
                             modifier = Modifier.size(24.dp)
                         )
@@ -318,26 +302,13 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             )
         }
 
-        TextButton(
-            onClick = { /* Handle forgot password */ },
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(bottom = 16.dp)
-        ) {
-            Text(
-                text = "Forgot your password?",
-                color = primaryColor,
-                style = TextStyle(fontSize = 14.sp)
-            )
-        }
-
         SSJetPackComposeProgressButton(
             type = SSButtonType.CIRCLE,
             width = 382.dp,
             height = 50.dp,
             cornerRadius = 10,
             assetColor = whiteColor,
-            text = "Login",
+            text = stringResource(R.string.login_button),
             textModifier = Modifier.padding(horizontal = 15.dp),
             fontSize = 16.sp,
             fontFamily = PoppinsSemiBold,
@@ -351,10 +322,10 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 loginAttempted = true
 
                 val isEmailValid = if (email.isEmpty()) {
-                    emailError = "Email tidak boleh kosong"
+                    emailError = context.getString(R.string.email_empty_error)
                     false
                 } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailError = "Format email tidak valid"
+                    emailError = context.getString(R.string.email_invalid_error)
                     false
                 } else {
                     emailError = null
@@ -362,10 +333,10 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 }
 
                 val isPasswordValid = if (password.isEmpty()) {
-                    passwordError = "Password tidak boleh kosong"
+                    passwordError = context.getString(R.string.password_empty_error)
                     false
-                } else if (password.length < 4) {
-                    passwordError = "Password minimal 4 karakter"
+                } else if (password.length < 8) {
+                    passwordError = context.getString(R.string.password_min_length_error)
                     false
                 } else {
                     passwordError = null
@@ -377,6 +348,24 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 }
             },
         )
+
+        TextButton(
+            onClick = {
+                navController.navigate("register") {
+                    popUpTo("login") { inclusive = true }
+                }
+            },
+            modifier = Modifier
+                .padding(top = 24.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text(
+                text = stringResource(R.string.register_link),
+                color = textColor,
+                fontFamily = PoppinsSemiBold,
+                style = TextStyle(fontSize = 14.sp)
+            )
+        }
     }
 }
 
