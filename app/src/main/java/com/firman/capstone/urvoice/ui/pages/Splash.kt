@@ -19,7 +19,6 @@ import com.firman.capstone.urvoice.R
 import com.firman.capstone.urvoice.ui.navigation.Screen
 import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
 import com.firman.capstone.urvoice.ui.viewmodel.SplashViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(navController: NavController, viewModel: SplashViewModel = hiltViewModel()) {
@@ -34,16 +33,9 @@ fun SplashScreen(navController: NavController, viewModel: SplashViewModel = hilt
         iterations = 1
     )
 
-    LaunchedEffect(key1 = progress) {
-        if (progress >= 1f) {
-            navController.navigate("onboarding") {
-                popUpTo("splash") { inclusive = true }
-            }
-        }
-    }
-
+    // Navigation logic
     LaunchedEffect(progress, appStartupState) {
-        if (progress >= 1f) {
+        if (progress >= 1f && !appStartupState.isLoading) {
             when {
                 !appStartupState.isOnboardingCompleted -> {
                     navController.navigate("onboarding") {
@@ -63,7 +55,6 @@ fun SplashScreen(navController: NavController, viewModel: SplashViewModel = hilt
             }
         }
     }
-
 
     Box(
         modifier = Modifier

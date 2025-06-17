@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.firman.capstone.urvoice.data.local.datastore.AuthPreferences
 import com.firman.capstone.urvoice.data.remote.models.LoginResponse
 import com.firman.capstone.urvoice.data.repository.login.LoginRepository
-import com.firman.capstone.urvoice.data.repository.login.LoginRepositoryImpl
 import com.firman.capstone.urvoice.utils.ResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,17 +38,16 @@ class LoginViewModel @Inject constructor(
     fun refreshSession(email: String, password: String) {
         viewModelScope.launch {
             try {
-                (loginRepository as? LoginRepositoryImpl)?.refreshSession(email, password)?.let { result ->
-                    when (result) {
-                        is ResultState.Success -> {
-                            // Token automatically saved in repository
-                        }
-                        is ResultState.Error -> {
-                            clearUserSession()
-                        }
-                        else -> {
-                            // Handle other states if needed
-                        }
+                val result = loginRepository.refreshSession(email, password)
+                when (result) {
+                    is ResultState.Success -> {
+                        // Token automatically saved in repository
+                    }
+                    is ResultState.Error -> {
+                        clearUserSession()
+                    }
+                    else -> {
+                        // Handle other states if needed
                     }
                 }
             } catch (e: Exception) {
@@ -60,14 +58,22 @@ class LoginViewModel @Inject constructor(
 
     fun saveUserCredentials(email: String, password: String, token: String) {
         viewModelScope.launch {
-            authPreferences.saveAuthToken(token)
+            try {
+                authPreferences.saveAuthToken(token)
+            } catch (e: Exception) {
+                _loginState.value = ResultState.Error("Failed to save credentials")
+            }
         }
     }
 
     fun clearUserSession() {
         viewModelScope.launch {
-            authPreferences.clearSession()
-            _loginState.value = ResultState.Initial
+            try {
+                authPreferences.clearSession()
+                _loginState.value = ResultState.Initial
+            } catch (e: Exception) {
+                // Handle error if needed
+            }
         }
     }
 
@@ -75,48 +81,61 @@ class LoginViewModel @Inject constructor(
         _loginState.value = ResultState.Initial
     }
 
-    suspend fun safeApiCall(email: String, password: String, apiCall: suspend () -> Unit) {
+    suspend fun safeApiCall(
+        email: String,
+        password: String,
+        apiCall: suspend () -> Unit
+    ) {
         try {
             val token = authPreferences.authToken.first()
 
-            if (token == null) {
+            if (token.isNullOrEmpty()) {
                 _loginState.value = ResultState.Error("No authentication token. Please login again.")
                 return
             }
 
             apiCall()
         } catch (e: Exception) {
-            if (e.message?.contains("401") == true || e.message?.contains("Unauthorized") == true) {
-                try {
-                    refreshSession(email, password)
-                    apiCall()
-                } catch (refreshException: Exception) {
-                    _loginState.value = ResultState.Error("Session expired. Please login again.")
+            when {
+                e.message?.contains("401") == true ||
+                        e.message?.contains("Unauthorized") == true -> {
+                    try {
+                        refreshSession(email, password)
+                        apiCall()
+                    } catch (refreshException: Exception) {
+                        _loginState.value = ResultState.Error("Session expired. Please login again.")
+                    }
                 }
-            } else {
-                _loginState.value = ResultState.Error(e.message ?: "API call failed")
+                else -> {
+                    _loginState.value = ResultState.Error(e.message ?: "API call failed")
+                }
             }
         }
     }
 
     suspend fun isUserLoggedIn(): Boolean {
-        return try {
-            val token = authPreferences.authToken.first()
-            token != null
-        } catch (e: Exception) {
-            false
-        }
+        return loginRepository.isUserLoggedIn()
     }
 
     fun autoRefreshToken(email: String, password: String) {
         viewModelScope.launch {
             try {
                 val token = authPreferences.authToken.first()
-                if (token != null) {
+                if (!token.isNullOrEmpty()) {
                     refreshSession(email, password)
                 }
             } catch (e: Exception) {
-                // Silent fail for auto refresh
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                loginRepository.logout()
+                _loginState.value = ResultState.Initial
+            } catch (e: Exception) {
+                _loginState.value = ResultState.Error("Logout failed")
             }
         }
     }

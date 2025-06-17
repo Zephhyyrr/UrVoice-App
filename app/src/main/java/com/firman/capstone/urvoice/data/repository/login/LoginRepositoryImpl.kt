@@ -42,7 +42,7 @@ class LoginRepositoryImpl @Inject constructor(
         }
     }
 
-    suspend fun refreshSession(email: String, password: String): ResultState<Unit> {
+    override suspend fun refreshSession(email: String, password: String): ResultState<Unit> {
         return withContext(Dispatchers.IO) {
             try {
                 val currentToken = authPreferences.authToken.firstOrNull()
@@ -65,6 +65,26 @@ class LoginRepositoryImpl @Inject constructor(
                 Log.e("RefreshError", "Exception during session refresh", e)
                 ResultState.Error(e.message ?: "Unknown error during refresh")
             }
+        }
+    }
+
+    override suspend fun isUserLoggedIn(): Boolean {
+        return try {
+            val token = authPreferences.authToken.firstOrNull()
+            !token.isNullOrEmpty()
+        } catch (e: Exception) {
+            Log.e("LoginRepository", "Error checking login status", e)
+            false
+        }
+    }
+
+    override suspend fun logout(): ResultState<Unit> {
+        return try {
+            authPreferences.clearSession()
+            ResultState.Success(Unit, "Logout successful")
+        } catch (e: Exception) {
+            Log.e("LoginRepository", "Error during logout", e)
+            ResultState.Error(e.message ?: "Logout failed")
         }
     }
 }

@@ -17,7 +17,7 @@ class OnboardingPreferences @Inject constructor(@ApplicationContext private val 
     }
 
     val hasSeenOnboarding: Flow<Boolean> = context.onboardingDataStore.data.map { preferences ->
-        preferences[HAS_SEEN_ONBOARDING] ?: false
+        preferences[HAS_SEEN_ONBOARDING] == true
     }
 
     suspend fun setOnboardingStatus(hasSeenOnboarding: Boolean) {

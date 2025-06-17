@@ -21,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://192.168.206.208:3000/\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.64.208:3000/\"")
     }
 
     buildTypes {
@@ -121,6 +121,10 @@ dependencies {
     debugImplementation(libs.library)
     releaseImplementation(libs.library.no.op)
     implementation(libs.okhttp)
+
+    // Coil (Image Loading)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Loading Button
     implementation (libs.ssjetpackcomposeprogressbutton)

@@ -3,6 +3,8 @@ package com.firman.capstone.urvoice.di
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.firman.capstone.urvoice.BuildConfig
+import com.firman.capstone.urvoice.data.remote.service.ArticleService
+import com.firman.capstone.urvoice.data.remote.service.UserService
 import com.firman.capstone.urvoice.data.remote.service.LoginService
 import com.firman.capstone.urvoice.data.remote.service.RegisterService
 import com.firman.capstone.urvoice.utils.ApiConstant
@@ -64,5 +66,17 @@ object NetworkModule {
     @Singleton
     fun provideRegisterService(retrofit: Retrofit): RegisterService{
         return retrofit.create(RegisterService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideArticleService(retrofit: Retrofit):ArticleService {
+        return retrofit.create(ArticleService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserService(retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
     }
 }

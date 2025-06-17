@@ -46,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.firman.capstone.urvoice.R
+import com.firman.capstone.urvoice.ui.navigation.Screen
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
 import com.firman.capstone.urvoice.ui.theme.greyTextColor
@@ -141,8 +142,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 }
 
                 Handler(Looper.getMainLooper()).postDelayed({
-                    navController.navigate("home") {
-                        popUpTo(navController.graph.findStartDestination().id) {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0) {
                             inclusive = true
                         }
                         launchSingleTop = true

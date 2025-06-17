@@ -8,6 +8,7 @@ object ApiConstant {
     // User Hit API
     const val USER_REGISTER = "api/users/register"
     const val USER_LOGIN = "api/users/login"
+    const val USER_CURRENT = "/api/users/current"
     const val USER_LOGOUT = "api/users/logout"
     const val USER_PROFILE = "api/users/uploadPhotos"
     const val USER_UPDATE = "api/users/update"
