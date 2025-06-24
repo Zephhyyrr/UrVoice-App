@@ -24,11 +24,16 @@ import com.firman.capstone.urvoice.ui.pages.ArticleScreen
 import com.firman.capstone.urvoice.ui.pages.HomeScreen
 import com.firman.capstone.urvoice.ui.pages.LoginScreen
 import com.firman.capstone.urvoice.ui.pages.OnBoardingScreen
+import com.firman.capstone.urvoice.ui.pages.ProfileScreen
 import com.firman.capstone.urvoice.ui.pages.RegisterScreen
 import com.firman.capstone.urvoice.ui.pages.SignScreen
+import com.firman.capstone.urvoice.ui.pages.RecordScreen
+import com.firman.capstone.urvoice.ui.pages.SpeechToTextScreen
 import com.firman.capstone.urvoice.ui.pages.SplashScreen
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
 import com.firman.capstone.urvoice.ui.viewmodel.ArticleViewModel
+import com.firman.capstone.urvoice.ui.viewmodel.ProfileViewModel
+import com.firman.capstone.urvoice.ui.viewmodel.SpeechViewModel
 
 @Composable
 fun UrVoiceRootApp(
@@ -51,6 +56,8 @@ fun UrVoiceRootApp(
         BottomNavItem(Screen.History.route, "History", painterResource(R.drawable.ic_history)),
         BottomNavItem(Screen.Profile.route, "Profile", painterResource(R.drawable.ic_profile))
     )
+
+    val sharedSpeechViewModel: SpeechViewModel = hiltViewModel()
 
     Box(modifier = Modifier.fillMaxSize()) {
         NavHost(
@@ -94,9 +101,16 @@ fun UrVoiceRootApp(
                 }
             }
             composable(Screen.Main.route) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Voice Screen", fontSize = 24.sp)
-                }
+                RecordScreen(
+                    viewModel = sharedSpeechViewModel,
+                    onNavigateToSpeechToText = {
+                        navController.navigate(Screen.SpeechToText.route)
+                    }
+                )
+            }
+
+            composable(Screen.SpeechToText.route) {
+                SpeechToTextScreen(viewModel = sharedSpeechViewModel)
             }
             composable(Screen.History.route) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -104,9 +118,8 @@ fun UrVoiceRootApp(
                 }
             }
             composable(Screen.Profile.route) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Profile Screen", fontSize = 24.sp)
-                }
+                val viewModel: ProfileViewModel = hiltViewModel()
+                ProfileScreen(viewModel = viewModel,)
             }
         }
 

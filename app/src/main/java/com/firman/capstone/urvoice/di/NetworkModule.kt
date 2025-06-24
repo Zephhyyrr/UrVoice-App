@@ -7,6 +7,7 @@ import com.firman.capstone.urvoice.data.remote.service.ArticleService
 import com.firman.capstone.urvoice.data.remote.service.UserService
 import com.firman.capstone.urvoice.data.remote.service.LoginService
 import com.firman.capstone.urvoice.data.remote.service.RegisterService
+import com.firman.capstone.urvoice.data.remote.service.SpeechService
 import com.firman.capstone.urvoice.utils.ApiConstant
 import dagger.Module
 import dagger.Provides
@@ -78,5 +79,11 @@ object NetworkModule {
     @Singleton
     fun provideUserService(retrofit: Retrofit): UserService {
         return retrofit.create(UserService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSpeechService(retrofit: Retrofit): SpeechService {
+        return retrofit.create(SpeechService::class.java)
     }
 }

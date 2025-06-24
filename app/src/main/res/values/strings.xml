@@ -57,4 +57,7 @@
     <string name="update_history_title_home">Riwayat Terbaru</string>
     <string name="menu_article_title">Article</string>
     <string name="nodata_article_title">Tidak ada data artikel</string>
+    <string name="menu_profile_title">Profil</string>
+    <string name="speech_to_text_title">Speech To Text</string>
+    <string name="record_title">Record</string>
 </resources>

@@ -29,6 +29,9 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
 
     @Serializable
+    object SpeechToText: Screen("speech-to-text")
+
+    @Serializable
     data class Article(val id: String) : Screen("article/{id}") {
         fun articleRoute() = "article/$id"
     }

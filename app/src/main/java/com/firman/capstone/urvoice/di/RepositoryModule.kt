@@ -6,6 +6,8 @@ import com.firman.capstone.urvoice.data.repository.login.LoginRepository
 import com.firman.capstone.urvoice.data.repository.login.LoginRepositoryImpl
 import com.firman.capstone.urvoice.data.repository.register.RegisterRepository
 import com.firman.capstone.urvoice.data.repository.register.RegisterRepositoryImpl
+import com.firman.capstone.urvoice.data.repository.speech.SpeechRepository
+import com.firman.capstone.urvoice.data.repository.speech.SpeechRepositoryImpl
 import com.firman.capstone.urvoice.data.repository.user.UserRepository
 import com.firman.capstone.urvoice.data.repository.user.UserRepositoryImpl
 import dagger.Binds
@@ -32,4 +34,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindUserRepository(userRepositoryImpl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSpeechRepository(speechRepositoryImpl: SpeechRepositoryImpl): SpeechRepository
 }

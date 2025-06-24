@@ -109,7 +109,7 @@ fun ArticleScreen(
                         }
                     } else {
                         LazyColumn(
-                            contentPadding = PaddingValues(16.dp),
+                            contentPadding = PaddingValues(15.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             items(articles) { article ->
