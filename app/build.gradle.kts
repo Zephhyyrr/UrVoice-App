@@ -122,6 +122,14 @@ dependencies {
     releaseImplementation(libs.library.no.op)
     implementation(libs.okhttp)
 
+    // Coil (Image Loading)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // Loading Button
+    implementation (libs.ssjetpackcomposeprogressbutton)
+
+
     // Loading Button
     implementation (libs.ssjetpackcomposeprogressbutton)
 

@@ -1,3 +1,63 @@
 <resources>
     <string name="app_name">UrVoice</string>
+
+    <!-- OnBoarding Screen -->
+    <string name="onboarding_title_1">Selamat Datang di \nUrVoice</string>
+    <string name="onboarding_description_1">Kami menyediakan speech-to-text dalam Bahasa Inggris dan koreksi grammar yang membantu Anda meningkatkan kemampuan public speaking dalam Bahasa Inggris</string>
+
+    <string name="onboarding_title_2">Aplikasi Untuk Menganalisis Speaking Anda</string>
+    <string name="onboarding_description_2">Analisis speaking Anda dengan menggunakan teknologi Generative AI</string>
+
+    <string name="onboarding_title_3">Ayo Tingkatkan Percaya Diri Bicara Bahasa Inggris Anda</string>
+    <string name="onboarding_description_3">Ayo Mulai Sekarang dan tingkatkan percaya diri Anda dalam berbicara Bahasa Inggris</string>
+
+    <!-- OnBoarding Buttons -->
+    <string name="button_start_now">Mulai Sekarang</string>
+    <string name="button_back">Kembali</string>
+    <string name="button_next">Selanjutnya</string>
+
+    <!-- Register Screen -->
+    <string name="register_title">Daftar Disini</string>
+    <string name="register_description">Buat akun dan mulai analisis kemampuan english speaking anda</string>
+
+    <!-- Login -->
+    <string name="login_title">Login Disini</string>
+    <string name="login_description">Selamat Datang Kembali, \nAyo Login</string>
+
+    <!-- Form Labels -->
+    <string name="name_label">Nama</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="login_button">Login</string>
+    <string name="register_button">Register</string>
+
+    <!-- Error Messages -->
+    <string name="name_empty_error">Nama tidak boleh kosong</string>
+    <string name="email_empty_error">Email tidak boleh kosong</string>
+    <string name="email_invalid_error">Format email tidak valid</string>
+    <string name="password_empty_error">Password tidak boleh kosong</string>
+    <string name="password_min_length_error">Password minimal 8 karakter</string>
+    <string name="name_min_length_error">Nama minimal 3 karakter</string>
+
+    <!-- Navigation -->
+    <string name="register_link">Belum punya akun? Daftar disini</string>
+    <string name="login_link">Sudah punya akun? Login disini</string>
+
+    <!-- Content Descriptions -->
+    <string name="hide_password">Sembunyikan password</string>
+    <string name="show_password">Tampilkan password</string>
+
+    <!-- Toast Messages -->
+    <string name="token_save_failed">Gagal menyimpan token, token tidak ditemukan.</string>
+
+    <!-- Content Descriptions -->
+    <string name="onboarding_image_desc">Gambar onboarding</string>
+    <string name="article_image_desc">Article Image</string>
+    <string name="article_home_title">Ayo Baca Artikel Bahasa Inggris untuk Meningkatkan Kemampuan Anda</string>
+    <string name="update_history_title_home">Riwayat Terbaru</string>
+    <string name="menu_article_title">Article</string>
+    <string name="nodata_article_title">Tidak ada data artikel</string>
+    <string name="menu_profile_title">Profil</string>
+    <string name="speech_to_text_title">Speech To Text</string>
+    <string name="record_title">Record</string>
 </resources>
