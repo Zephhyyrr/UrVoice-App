@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,6 +46,7 @@ fun RecordScreen(
     val isRecording by viewModel.isRecording.collectAsStateWithLifecycle()
     val convertedText by viewModel.convertedText.collectAsStateWithLifecycle()
 
+    var isConfirmationAccepted by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var recordedText by remember { mutableStateOf("") }
 
@@ -82,9 +84,16 @@ fun RecordScreen(
     )
 
     LaunchedEffect(speechToTextState) {
-        if (speechToTextState is ResultState.Success && convertedText.isNotEmpty()) {
+        if (speechToTextState is ResultState.Success && convertedText.isNotEmpty() && !isConfirmationAccepted) {
             recordedText = convertedText
             showConfirmationDialog = true
+        }
+    }
+
+    LaunchedEffect(isConfirmationAccepted, speechToTextState) {
+        if (isConfirmationAccepted && speechToTextState is ResultState.Success) {
+            onNavigateToSpeechToText()
+            isConfirmationAccepted = false
         }
     }
 
@@ -114,39 +123,41 @@ fun RecordScreen(
             title = {
                 Text(
                     text = "Perekaman Berhasil!",
-                    fontFamily = PoppinsSemiBold
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        color = textColor,
+                        fontFamily = PoppinsMedium,
+                    )
                 )
             },
             text = {
                 Column {
                     Text(
                         text = "Apakah Anda ingin mengubah ini ke teks?",
-                        fontFamily = PoppinsRegular,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            color = textColor,
+                            fontFamily = PoppinsMedium,
+                        )
                     )
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Text(
-                            text = recordedText,
-                            modifier = Modifier.padding(12.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontFamily = PoppinsRegular
-                        )
-                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
                         showConfirmationDialog = false
+                        isConfirmationAccepted = true
                         onNavigateToSpeechToText()
                     }
                 ) {
-                    Text("Iya", fontFamily = PoppinsMedium)
+                    Text(
+                        "Iya", style = TextStyle(
+                            fontSize = 14.sp,
+                            color = whiteColor,
+                            fontFamily = PoppinsMedium,
+                        )
+                    )
                 }
             },
             dismissButton = {
@@ -154,9 +165,19 @@ fun RecordScreen(
                     onClick = {
                         showConfirmationDialog = false
                         viewModel.resetState()
-                    }
+                    },
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = primaryColor,
+                    ),
+                    border = BorderStroke(1.dp, primaryColor)
                 ) {
-                    Text("Rekam Ulang", fontFamily = PoppinsMedium)
+                    Text(
+                        "Rekam Ulang", style = TextStyle(
+                            fontSize = 14.sp,
+                            color = primaryColor,
+                            fontFamily = PoppinsMedium,
+                        )
+                    )
                 }
             }
         )
@@ -195,12 +216,11 @@ fun RecordScreen(
 
                 Text(
                     text = when {
-                        !hasAudioPermission -> "🚫 Izin mikrofon diperlukan untuk merekam. Ketuk mikrofon untuk mengizinkan."
+                        !hasAudioPermission -> "Izin mikrofon diperlukan untuk merekam. Ketuk mikrofon untuk mengizinkan."
                         isRecording -> "🔴 Sedang merekam... (Ketuk untuk berhenti)"
                         speechToTextState is ResultState.Loading -> "⏳ Memproses audio menjadi teks..."
-                        convertedText.isNotEmpty() -> "✅ Hasil konversi:"
-                        speechToTextState is ResultState.Error -> "❌ Terjadi kesalahan"
-                        else -> "🎤 Tekan tombol mikrofon untuk memulai merekam"
+                        speechToTextState is ResultState.Error -> "Terjadi kesalahan"
+                        else -> "Tekan tombol mikrofon untuk memulai merekam"
                     },
                     style = TextStyle(
                         fontSize = 14.sp,
@@ -315,7 +335,7 @@ fun RecordScreen(
                         LottieAnimation(
                             composition = loadingAnimationComposition,
                             progress = { loadingAnimationProgress },
-                            modifier = Modifier.size(200.dp)
+                            modifier = Modifier.size(150.dp)
                         )
                     }
 

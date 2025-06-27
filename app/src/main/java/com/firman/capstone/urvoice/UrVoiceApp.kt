@@ -44,7 +44,7 @@ fun UrVoiceRootApp(
     val routesWithBottomNav = listOf(
         Screen.Home.route,
         "article",
-        Screen.Main.route,
+        Screen.Record.route,
         Screen.History.route,
         Screen.Profile.route
     )
@@ -52,7 +52,12 @@ fun UrVoiceRootApp(
     val bottomNavItems = listOf(
         BottomNavItem(Screen.Home.route, "Home", painterResource(R.drawable.ic_home)),
         BottomNavItem("article", "Article", painterResource(R.drawable.ic_articles)),
-        BottomNavItem(Screen.Main.route, "Voice", painterResource(R.drawable.ic_mic), isMainFeature = true),
+        BottomNavItem(
+            Screen.Record.route,
+            "Voice",
+            painterResource(R.drawable.ic_mic),
+            isMainFeature = true
+        ),
         BottomNavItem(Screen.History.route, "History", painterResource(R.drawable.ic_history)),
         BottomNavItem(Screen.Profile.route, "Profile", painterResource(R.drawable.ic_profile))
     )
@@ -100,7 +105,7 @@ fun UrVoiceRootApp(
                     Text("Article Detail: $articleId", fontSize = 24.sp)
                 }
             }
-            composable(Screen.Main.route) {
+            composable(Screen.Record.route) {
                 RecordScreen(
                     viewModel = sharedSpeechViewModel,
                     onNavigateToSpeechToText = {
@@ -110,8 +115,22 @@ fun UrVoiceRootApp(
             }
 
             composable(Screen.SpeechToText.route) {
-                SpeechToTextScreen(viewModel = sharedSpeechViewModel)
+                SpeechToTextScreen(
+                    viewModel = sharedSpeechViewModel,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onNavigateRecordScreen = {
+                        navController.navigate(Screen.Record.route)
+                    },
+                    onNavigateAnalyzeScreen = {
+                        navController.navigate(Screen.Analzye.route) {
+                            popUpTo(Screen.SpeechToText.route) { inclusive = true }
+                        }
+                    }
+                )
             }
+
             composable(Screen.History.route) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("History Screen", fontSize = 24.sp)
@@ -119,7 +138,7 @@ fun UrVoiceRootApp(
             }
             composable(Screen.Profile.route) {
                 val viewModel: ProfileViewModel = hiltViewModel()
-                ProfileScreen(viewModel = viewModel,)
+                ProfileScreen(viewModel = viewModel)
             }
         }
 
@@ -144,13 +163,14 @@ fun UrVoiceApp() {
         when (currentRoute) {
             Screen.Home.route,
             "article",
-            Screen.Main.route,
+            Screen.Record.route,
             Screen.History.route,
             Screen.Profile.route,
             Screen.Login.route,
             Screen.Register.route -> {
                 (context as? Activity)?.finish()
             }
+
             else -> {
                 if (!navController.popBackStack()) {
                     (context as? Activity)?.finish()

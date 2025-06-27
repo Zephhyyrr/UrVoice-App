@@ -1,5 +1,6 @@
 package com.firman.capstone.urvoice.ui.pages
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,6 +42,7 @@ import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
 import com.firman.capstone.urvoice.ui.theme.primaryColor
 import com.firman.capstone.urvoice.ui.theme.whiteColor
 import com.firman.capstone.urvoice.ui.viewmodel.ProfileViewModel
+import com.firman.capstone.urvoice.utils.ImageUrlUtils
 import com.firman.capstone.urvoice.utils.ResultState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -177,12 +179,16 @@ private fun ProfileCard(
         }
 
         is ResultState.Success -> {
+            val imageUrl = (state.data.data?.profileImage as? String)?.let {
+                ImageUrlUtils.buildImageUrl(it)
+            } ?: ""
             ProfileCardContent(
                 name = state.data.data?.name ?: "Unknown User",
                 email = state.data.data?.email ?: "No email",
-                profileImage = state.data.data?.profileImage.toString(),
+                profileImage = imageUrl,
                 onEditClick = onEditClick
             )
+            Log.d("ProfileImageDebug", "Image URL = $imageUrl")
         }
 
         is ResultState.Error -> {

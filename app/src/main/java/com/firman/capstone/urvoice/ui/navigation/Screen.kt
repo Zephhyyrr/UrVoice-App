@@ -29,13 +29,16 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
 
     @Serializable
+    object Record : Screen("record")
+
+    @Serializable
+    object Analzye : Screen("analyze")
+
+    @Serializable
     object SpeechToText: Screen("speech-to-text")
 
     @Serializable
     data class Article(val id: String) : Screen("article/{id}") {
         fun articleRoute() = "article/$id"
     }
-
-    @Serializable
-    object Main : Screen("main")
 }

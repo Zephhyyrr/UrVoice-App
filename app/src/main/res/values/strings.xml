@@ -60,4 +60,7 @@
     <string name="menu_profile_title">Profil</string>
     <string name="speech_to_text_title">Speech To Text</string>
     <string name="record_title">Record</string>
+    <string name="back">Close_icon</string>
+    <string name="button_retry_record">Ulang Rekam\n</string>
+    <string name="button_analyze_grammar">Analisis</string>
 </resources>

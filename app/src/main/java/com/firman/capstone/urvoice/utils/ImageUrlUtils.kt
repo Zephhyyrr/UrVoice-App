@@ -7,6 +7,7 @@ object ImageUrlUtils {
         return when {
             imageUrl.isNullOrBlank() -> ""
             imageUrl.startsWith("http://") || imageUrl.startsWith("https://") -> imageUrl
+            imageUrl.startsWith("/uploads/") -> "${BuildConfig.BASE_URL.trimEnd('/')}$imageUrl"
             else -> "${BuildConfig.BASE_URL.trimEnd('/')}/uploads/$imageUrl"
         }
     }

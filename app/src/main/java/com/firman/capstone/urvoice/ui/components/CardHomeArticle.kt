@@ -36,17 +36,6 @@ fun CardHomeArticle(
             contentDescription = "Article image",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
-            loading = {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            },
             error = {
                 Box(
                     modifier = Modifier.fillMaxSize(),
