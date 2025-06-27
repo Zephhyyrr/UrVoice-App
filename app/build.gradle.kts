@@ -129,6 +129,10 @@ dependencies {
     // Loading Button
     implementation (libs.ssjetpackcomposeprogressbutton)
 
+
+    // Loading Button
+    implementation (libs.ssjetpackcomposeprogressbutton)
+
     // Lottie Animation
     implementation(libs.lottie.compose)
     implementation(libs.lottie)
