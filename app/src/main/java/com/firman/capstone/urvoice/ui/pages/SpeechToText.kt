@@ -1,5 +1,6 @@
 package com.firman.capstone.urvoice.ui.pages
 
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,9 +44,9 @@ import kotlinx.coroutines.launch
 fun SpeechToTextScreen(
     modifier: Modifier = Modifier,
     viewModel: SpeechViewModel = hiltViewModel(),
-    onNavigateRecordScreen: () -> Unit = {},
-    onNavigateAnalyzeScreen: () -> Unit = {},
     onBackClick: () -> Unit,
+    onNavigateRecordScreen: () -> Unit = {},
+    onNavigateAnalyzeScreen: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
     var retryRecordStateButton by remember{mutableStateOf(SSButtonState.IDLE)}
@@ -85,20 +86,18 @@ fun SpeechToTextScreen(
                 .padding(innerPadding)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(modifier = Modifier.weight(1f)) {
+                Box(modifier = Modifier.weight(1f)) {
                     SpeechToTextCard(
-                        text = convertedText.ifEmpty { "Ini adalah konten kartu untuk fitur Speech to Text." }
+                        text = convertedText.ifEmpty { stringResource(R.string.example_speech_to_text) }
                     )
                 }
 
                 Row(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(15.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -126,7 +125,6 @@ fun SpeechToTextScreen(
                             contentColor = primaryColor
                         ),
                         text = stringResource(R.string.button_retry_record),
-                        textModifier = Modifier,
                         fontSize = 14.sp,
                         fontFamily = PoppinsSemiBold
                     )
@@ -141,7 +139,7 @@ fun SpeechToTextScreen(
                                 analyzeStateButton = SSButtonState.LOADING
                                 delay(1000)
                                 analyzeStateButton = SSButtonState.IDLE
-                                onNavigateAnalyzeScreen
+                                onNavigateAnalyzeScreen()
                             }
                         },
                         cornerRadius = 100,
@@ -154,7 +152,6 @@ fun SpeechToTextScreen(
                             disabledContainerColor = primaryColor,
                         ),
                         text = stringResource(R.string.button_analyze_grammar),
-                        textModifier = Modifier,
                         fontSize = 14.sp,
                         fontFamily = PoppinsSemiBold
                     )
@@ -162,7 +159,6 @@ fun SpeechToTextScreen(
             }
         }
     }
-
 }
 
 @Preview(showBackground = true)
