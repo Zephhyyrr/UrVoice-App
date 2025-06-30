@@ -1,6 +1,5 @@
 package com.firman.capstone.urvoice.ui.pages
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,9 +7,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,8 +54,8 @@ fun SpeechToTextScreen(
     onNavigateAnalyzeScreen: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
-    var retryRecordStateButton by remember{mutableStateOf(SSButtonState.IDLE)}
-    var analyzeStateButton by remember{mutableStateOf(SSButtonState.IDLE)}
+    var retryRecordStateButton by remember { mutableStateOf(SSButtonState.IDLE) }
+    var analyzeStateButton by remember { mutableStateOf(SSButtonState.IDLE) }
     val convertedText = viewModel.convertedText.collectAsStateWithLifecycle().value
 
     Scaffold(
@@ -61,18 +66,18 @@ fun SpeechToTextScreen(
                         text = stringResource(R.string.speech_to_text_title),
                         fontSize = 14.sp,
                         fontFamily = PoppinsSemiBold,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = primaryColor
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = primaryColor
                 ),
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             painter = painterResource(R.drawable.ic_close_white),
                             contentDescription = stringResource(R.string.back),
-                            tint = MaterialTheme.colorScheme.onSecondary
+                            tint = whiteColor
                         )
                     }
                 }
@@ -97,7 +102,7 @@ fun SpeechToTextScreen(
 
                 Row(
                     modifier = Modifier
-                        .padding(15.dp)
+                        .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {

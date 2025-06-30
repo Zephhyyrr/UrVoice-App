@@ -1,8 +1,6 @@
 package com.firman.capstone.urvoice.ui.pages
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -14,10 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.rememberAsyncImagePainter
+import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -30,12 +27,14 @@ import com.firman.capstone.urvoice.ui.theme.textColor
 import com.firman.capstone.urvoice.ui.theme.whiteColor
 import com.firman.capstone.urvoice.utils.ResultState
 import com.firman.capstone.urvoice.ui.viewmodel.ArticleViewModel
+import com.firman.capstone.urvoice.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ArticleScreen(
     modifier: Modifier = Modifier,
-    viewModel: ArticleViewModel
+    viewModel: ArticleViewModel,
+    navController: NavController
 ) {
     val articleState by viewModel.articles.collectAsState()
 
@@ -77,7 +76,8 @@ fun ArticleScreen(
                 }
 
                 is ResultState.Success -> {
-                    val articles = (articleState as ResultState.Success<List<ArticleResponse.Data>>).data
+                    val articles =
+                        (articleState as ResultState.Success<List<ArticleResponse.Data>>).data
                     if (articles.isEmpty()) {
                         Box(
                             modifier = Modifier
@@ -109,6 +109,8 @@ fun ArticleScreen(
                         }
                     } else {
                         LazyColumn(
+                            modifier = Modifier
+                                .padding(bottom = 80.dp),
                             contentPadding = PaddingValues(15.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
@@ -116,12 +118,18 @@ fun ArticleScreen(
                                 CardArticle(
                                     title = article.title ?: "Tanpa Judul",
                                     content = article.content ?: "",
-                                    imageUrl = article.image ?: ""
+                                    imageUrl = article.image ?: "",
+                                    onClick = {
+                                        navController.navigate(
+                                            Screen.Article(article.id.toString()).articleRoute()
+                                        )
+                                    }
                                 )
                             }
                         }
                     }
                 }
+
                 is ResultState.Error -> {
                     val errorMessage = (articleState as ResultState.Error).errorMessage
                     Text(
@@ -135,7 +143,6 @@ fun ArticleScreen(
                     // Initial State
                 }
             }
-
         }
     }
 }

@@ -64,4 +64,15 @@
     <string name="button_retry_record">Ulang Rekam</string>
     <string name="button_analyze_grammar">Analisis</string>
     <string name="example_speech_to_text">Ini adalah konten kartu untuk fitur Speech to Text.</string>
+    <string name="article_detail_title">Detail Artikel</string>
+    <string name="edit_profile_title">Edit Profil</string>
+    <string name="edit_name_title">Nama</string>
+    <string name="enter_your_name">Masukkan Nama Anda</string>
+    <string name="edit_email_title">Email</string>
+    <string name="user_email">Masukkan Email Anda</string>
+    <string name="edit_password_title">Password</string>
+    <string name="save">Simpan</string>
+    <string name="success">Berhasil</string>
+    <string name="save_profile_success">Profil berhasil disimpan!</string>
+    <string name="ok">Oke</string>
 </resources>

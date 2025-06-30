@@ -20,7 +20,9 @@ import androidx.navigation.compose.rememberNavController
 import com.firman.capstone.urvoice.ui.components.BottomAppBarWithFab
 import com.firman.capstone.urvoice.ui.components.BottomNavItem
 import com.firman.capstone.urvoice.ui.navigation.Screen
+import com.firman.capstone.urvoice.ui.pages.ArticleDetailScreen
 import com.firman.capstone.urvoice.ui.pages.ArticleScreen
+import com.firman.capstone.urvoice.ui.pages.EditProfileScreen
 import com.firman.capstone.urvoice.ui.pages.HomeScreen
 import com.firman.capstone.urvoice.ui.pages.LoginScreen
 import com.firman.capstone.urvoice.ui.pages.OnBoardingScreen
@@ -97,14 +99,23 @@ fun UrVoiceRootApp(
             }
             composable("article") {
                 val viewModel: ArticleViewModel = hiltViewModel()
-                ArticleScreen(viewModel = viewModel)
+                ArticleScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
             }
             composable("article/{id}") { backStackEntry ->
-                val articleId = backStackEntry.arguments?.getString("id") ?: ""
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Article Detail: $articleId", fontSize = 24.sp)
-                }
+                val viewModel: ArticleViewModel = hiltViewModel()
+                val articleId =
+                    backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: return@composable
+
+                ArticleDetailScreen(
+                    viewModel = viewModel,
+                    articleId = articleId,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
+
             composable(Screen.Record.route) {
                 RecordScreen(
                     viewModel = sharedSpeechViewModel,
@@ -136,9 +147,42 @@ fun UrVoiceRootApp(
                     Text("History Screen", fontSize = 24.sp)
                 }
             }
+
             composable(Screen.Profile.route) {
                 val viewModel: ProfileViewModel = hiltViewModel()
-                ProfileScreen(viewModel = viewModel)
+                val shouldRefresh = remember {
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.getLiveData<Boolean>("refreshProfile")
+                }
+
+                LaunchedEffect(shouldRefresh?.value) {
+                    if (shouldRefresh?.value == true) {
+                        viewModel.getCurrentUser()
+                        navController.currentBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("refreshProfile", false)
+                    }
+                }
+
+                ProfileScreen(
+                    viewModel = viewModel,
+                    onEditProfileClick = {
+                        navController.navigate(Screen.EditProfile.route)
+                    }
+                )
+            }
+
+            composable(Screen.EditProfile.route) {
+                EditProfileScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onSaveClick = {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("refreshProfile", true)
+                        navController.popBackStack()
+                    }
+                )
             }
         }
 

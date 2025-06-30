@@ -1,6 +1,7 @@
 package com.firman.capstone.urvoice.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -25,13 +26,14 @@ import com.firman.capstone.urvoice.ui.theme.textColor
 import com.firman.capstone.urvoice.utils.ImageUrlUtils
 
 @Composable
-fun CardArticle(title: String, content: String, imageUrl: String) {
+fun CardArticle(title: String, content: String, imageUrl: String, onClick: () -> Unit) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .width(380.dp)
             .height(120.dp)
+            .clickable { onClick() }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -106,7 +108,8 @@ fun CardArticlePreview() {
         CardArticle(
             title = "Sample Article Title",
             content = "This is a sample content for the article. It should be concise and informative.",
-            imageUrl = "https://example.com/sample-image.jpg"
+            imageUrl = "https://example.com/sample-image.jpg",
+            onClick = { /* Preview onClick */ },
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.firman.capstone.urvoice.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.firman.capstone.urvoice.data.remote.models.ArticleResponse
@@ -19,61 +20,49 @@ class ArticleViewModel @Inject constructor(
     private val _articles =
         MutableStateFlow<ResultState<List<ArticleResponse.Data>>>(ResultState.Initial)
     val articles: StateFlow<ResultState<List<ArticleResponse.Data>>> = _articles
+    private val _articleDetail = MutableStateFlow<ResultState<ArticleResponse.Data>>(ResultState.Initial)
+    val articleDetail: StateFlow<ResultState<ArticleResponse.Data>> = _articleDetail
 
     init {
         getAllArticles()
     }
 
     fun getAllArticles() {
-        _articles.value = ResultState.Loading
         viewModelScope.launch {
             articleRepository.getAllArticle().collect { result ->
-                when (result) {
-                    is ResultState.Success -> {
-                        _articles.value = ResultState.Success(
-                            data = result.data,
-                            successMessage = result.successMessage
-                        )
-                    }
-
-                    is ResultState.Error -> {
-                        _articles.value = ResultState.Error(result.errorMessage)
-                    }
-
-                    is ResultState.Loading -> {
-                        _articles.value = ResultState.Loading
-                    }
-
-                    is ResultState.Initial -> {
-                        _articles.value = ResultState.Initial
-                    }
+                _articles.value = when (result) {
+                    is ResultState.Success -> ResultState.Success(
+                        data = result.data,
+                        successMessage = result.successMessage
+                    )
+                    is ResultState.Error -> ResultState.Error(result.errorMessage)
+                    is ResultState.Loading -> ResultState.Loading
+                    is ResultState.Initial -> ResultState.Initial
                 }
             }
         }
     }
 
     fun getArticleById(id: Int) {
-        _articles.value = ResultState.Loading
         viewModelScope.launch {
             articleRepository.getArticleById(id).collect { result ->
                 when (result) {
                     is ResultState.Success -> {
-                        _articles.value = ResultState.Success(
+                        Log.d("ArticleViewModel", "Success getArticleById: ${result.data}")
+                        _articleDetail.value = ResultState.Success(
                             data = result.data,
                             successMessage = result.successMessage
                         )
                     }
-
                     is ResultState.Error -> {
-                        _articles.value = ResultState.Error(result.errorMessage)
+                        Log.e("ArticleViewModel", "Error: ${result.errorMessage}")
+                        _articleDetail.value = ResultState.Error(result.errorMessage)
                     }
-
                     is ResultState.Loading -> {
-                        _articles.value = ResultState.Loading
+                        _articleDetail.value = ResultState.Loading
                     }
-
                     is ResultState.Initial -> {
-                        _articles.value = ResultState.Initial
+                        _articleDetail.value = ResultState.Initial
                     }
                 }
             }

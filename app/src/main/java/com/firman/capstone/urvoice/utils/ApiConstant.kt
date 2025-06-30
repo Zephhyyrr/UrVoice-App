@@ -16,7 +16,7 @@ object ApiConstant {
 
     // Article Hit API
     const val ARTICLE_LIST = "api/articles/getAll"
-    const val ARTICLE_DETAIL = "api/articles/{id}"
+    const val ARTICLE_DETAIL = "api/articles/getArticle/{id}"
 
     // Model Hit API
     const val SPEECH_TO_TEXT = "api/models/speech-to-text"

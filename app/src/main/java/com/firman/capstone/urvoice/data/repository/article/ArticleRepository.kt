@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface ArticleRepository {
     suspend fun getAllArticle(): Flow<ResultState<List<ArticleResponse.Data>>>
-    suspend fun getArticleById(id: Int): Flow<ResultState<List<ArticleResponse.Data>>>
+    suspend fun getArticleById(id: Int): Flow<ResultState<ArticleResponse.Data>>
 }

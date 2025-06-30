@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.firman.capstone.urvoice.data.remote.models.CurrentUserResponse
 import com.firman.capstone.urvoice.data.remote.models.DeleteUserResponse
 import com.firman.capstone.urvoice.data.remote.models.UserLogoutResponse
+import com.firman.capstone.urvoice.data.remote.models.UserResponse
 import com.firman.capstone.urvoice.data.repository.user.UserRepository
 import com.firman.capstone.urvoice.utils.ResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,9 @@ class ProfileViewModel @Inject constructor(
         MutableStateFlow<ResultState<CurrentUserResponse>>(ResultState.Initial)
     val currentUserProfile: StateFlow<ResultState<CurrentUserResponse>> =
         _currentUserProfile.asStateFlow()
+
+    private val _updateUserState = MutableStateFlow<ResultState<UserResponse>>(ResultState.Initial)
+    val updateUserState: StateFlow<ResultState<UserResponse>> = _updateUserState
 
     private val _deleteUser = MutableStateFlow<ResultState<DeleteUserResponse>>(ResultState.Initial)
     private val _logoutUser = MutableStateFlow<ResultState<UserLogoutResponse>>(ResultState.Initial)
@@ -43,6 +47,19 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateUserProfile(name: String, password: String?) {
+        viewModelScope.launch {
+            userRepository.updateUser(name, password ?: "")
+                .collect { result ->
+                    _updateUserState.value = result
+                    if (result is ResultState.Success) {
+                        getCurrentUser()
+                    }
+                }
+        }
+    }
+
 
     fun logout() {
         viewModelScope.launch {

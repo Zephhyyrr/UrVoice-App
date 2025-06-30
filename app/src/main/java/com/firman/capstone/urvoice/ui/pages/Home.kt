@@ -132,8 +132,8 @@ private fun ArticlesContent(
                     items(articles) { article ->
                         CardHomeArticle(
                             imageUrl = article.image.orEmpty(),
-                            modifier = Modifier.clickable {
-                                navController.navigate("article_detail/${article.id}")
+                            onClick = {
+                                navController.navigate("article/${article.id}")
                             }
                         )
                     }
