@@ -23,7 +23,7 @@ import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
 import com.firman.capstone.urvoice.ui.theme.textColor
-import com.firman.capstone.urvoice.utils.ImageUrlUtils
+import com.firman.capstone.urvoice.utils.MediaUrlUtils
 
 @Composable
 fun CardArticle(title: String, content: String, imageUrl: String, onClick: () -> Unit) {
@@ -40,7 +40,7 @@ fun CardArticle(title: String, content: String, imageUrl: String, onClick: () ->
             modifier = Modifier.fillMaxSize()
         ) {
             SubcomposeAsyncImage(
-                model = ImageUrlUtils.buildImageUrl(imageUrl),
+                model = MediaUrlUtils.buildImageUrl(imageUrl),
                 contentDescription = "Article image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

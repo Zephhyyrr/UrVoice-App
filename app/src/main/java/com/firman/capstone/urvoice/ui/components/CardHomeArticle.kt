@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import com.firman.capstone.urvoice.utils.ImageUrlUtils
+import com.firman.capstone.urvoice.utils.MediaUrlUtils
 
 @Composable
 fun CardHomeArticle(
@@ -29,7 +29,7 @@ fun CardHomeArticle(
             .size(width = 327.dp, height = 180.dp)
             .clickable { onClick() }
     ) {
-        val fullImageUrl = ImageUrlUtils.buildImageUrl(imageUrl)
+        val fullImageUrl = MediaUrlUtils.buildImageUrl(imageUrl)
 
         SubcomposeAsyncImage(
             model = fullImageUrl,

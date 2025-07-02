@@ -107,10 +107,10 @@ fun ProfileCardContent(
                     .padding(12.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    painter = painterResource(R.drawable.ic_pencil),
                     contentDescription = "Edit Profile",
                     tint = Color.Gray,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }

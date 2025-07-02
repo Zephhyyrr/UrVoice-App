@@ -2,7 +2,7 @@ package com.firman.capstone.urvoice.utils
 
 import com.firman.capstone.urvoice.BuildConfig
 
-object ImageUrlUtils {
+object MediaUrlUtils {
     fun buildImageUrl(imageUrl: String?): String {
         return when {
             imageUrl.isNullOrBlank() -> ""

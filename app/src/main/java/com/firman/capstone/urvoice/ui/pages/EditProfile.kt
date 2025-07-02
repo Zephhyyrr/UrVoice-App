@@ -1,7 +1,6 @@
 package com.firman.capstone.urvoice.ui.pages
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -33,7 +32,7 @@ import com.firman.capstone.urvoice.data.remote.models.CurrentUserResponse
 import com.firman.capstone.urvoice.ui.components.CustomAlertDialog
 import com.firman.capstone.urvoice.ui.theme.*
 import com.firman.capstone.urvoice.ui.viewmodel.ProfileViewModel
-import com.firman.capstone.urvoice.utils.ImageUrlUtils
+import com.firman.capstone.urvoice.utils.MediaUrlUtils
 import com.firman.capstone.urvoice.utils.ResultState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.*
 import kotlinx.coroutines.launch
@@ -58,7 +57,7 @@ fun EditProfileScreen(
     val coroutineScope = rememberCoroutineScope()
     var showSuccessDialog by remember { mutableStateOf(false) }
     val imageUrl = (currentUserState as? ResultState.Success)?.data?.data?.profileImage?.let {
-        ImageUrlUtils.buildImageUrl(it.toString())
+        MediaUrlUtils.buildImageUrl(it.toString())
     } ?: ""
 
     LaunchedEffect(currentUserState) {
@@ -376,5 +375,4 @@ fun EditProfileScreen(
             )
         }
     }
-
 }

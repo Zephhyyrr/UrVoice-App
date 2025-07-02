@@ -17,8 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.firman.capstone.urvoice.ui.components.BottomAppBarWithFab
-import com.firman.capstone.urvoice.ui.components.BottomNavItem
+import com.firman.capstone.urvoice.ui.navigation.BottomAppBarWithFab
+import com.firman.capstone.urvoice.ui.navigation.BottomNavItem
 import com.firman.capstone.urvoice.ui.navigation.Screen
 import com.firman.capstone.urvoice.ui.pages.ArticleDetailScreen
 import com.firman.capstone.urvoice.ui.pages.ArticleScreen
@@ -150,11 +150,9 @@ fun UrVoiceRootApp(
 
             composable(Screen.Profile.route) {
                 val viewModel: ProfileViewModel = hiltViewModel()
-                val shouldRefresh = remember {
-                    navController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.getLiveData<Boolean>("refreshProfile")
-                }
+                val shouldRefresh = navController.currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.getLiveData<Boolean>("refreshProfile")
 
                 LaunchedEffect(shouldRefresh?.value) {
                     if (shouldRefresh?.value == true) {
@@ -167,6 +165,7 @@ fun UrVoiceRootApp(
 
                 ProfileScreen(
                     viewModel = viewModel,
+                    navController = navController,
                     onEditProfileClick = {
                         navController.navigate(Screen.EditProfile.route)
                     }

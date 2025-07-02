@@ -1,4 +1,4 @@
-package com.firman.capstone.urvoice.ui.components
+package com.firman.capstone.urvoice.ui.navigation
 
 import androidx.compose.ui.graphics.painter.Painter
 

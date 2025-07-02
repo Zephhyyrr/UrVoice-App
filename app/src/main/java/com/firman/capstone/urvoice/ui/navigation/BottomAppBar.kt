@@ -1,4 +1,4 @@
-package com.firman.capstone.urvoice.ui.components
+package com.firman.capstone.urvoice.ui.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.firman.capstone.urvoice.ui.navigation.Screen
 import com.firman.capstone.urvoice.ui.theme.PoppinsMedium
 import com.firman.capstone.urvoice.ui.theme.primaryColor
 import com.firman.capstone.urvoice.ui.theme.textColor

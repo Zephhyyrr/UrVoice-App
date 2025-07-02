@@ -142,4 +142,7 @@ dependencies {
 
     // View Pager Onboarding
     implementation(libs.foundation.pager)
+
+    // live data
+    implementation (libs.androidx.lifecycle.livedata.ktx)
 }

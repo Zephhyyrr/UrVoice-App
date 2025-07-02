@@ -75,4 +75,21 @@
     <string name="success">Berhasil</string>
     <string name="save_profile_success">Profil berhasil disimpan!</string>
     <string name="ok">Oke</string>
+    <string name="setting_profile_title">Pengaturan</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_confirmation">Sign Out</string>
+    <string name="yes">Iya</string>
+    <string name="no">Tidak</string>
+    <string name="sign_out_message">Apakah anda yakin untuk Sign Out?</string>
+    <string name="cancel">Batal</string>
+    <string name="delete_account">Hapus Akun</string>
+    <string name="delete_account_message">Apakah anda yakin untuk menghapus akun?</string>
+    <string name="language">Bahasa</string>
+    <string name="email_not_registered_title">User tidak ditemukan</string>
+    <string name="email_not_registered_message">Silahkan daftarkan email anda</string>
+    <string name="register_now">Daftar</string>
+    <string name="register_failed">Register Gagal</string>
+    <string name="account_already_exists_title">Akun sudah terdaftar</string>
+    <string name="account_already_exists_message">Akun anda sudah terdaftar silahkan login sekarang!</string>
+    <string name="login_now">Login</string>
 </resources>

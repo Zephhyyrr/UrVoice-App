@@ -2,6 +2,7 @@ package com.firman.capstone.urvoice.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.firman.capstone.urvoice.data.local.datastore.AuthPreferences
 import com.firman.capstone.urvoice.data.remote.models.CurrentUserResponse
 import com.firman.capstone.urvoice.data.remote.models.DeleteUserResponse
 import com.firman.capstone.urvoice.data.remote.models.UserLogoutResponse
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val authPreferences: AuthPreferences
 ) : ViewModel() {
     private val _currentUserProfile =
         MutableStateFlow<ResultState<CurrentUserResponse>>(ResultState.Initial)
@@ -29,6 +31,8 @@ class ProfileViewModel @Inject constructor(
 
     private val _deleteUser = MutableStateFlow<ResultState<DeleteUserResponse>>(ResultState.Initial)
     private val _logoutUser = MutableStateFlow<ResultState<UserLogoutResponse>>(ResultState.Initial)
+    val logoutUserState: StateFlow<ResultState<UserLogoutResponse>> = _logoutUser.asStateFlow()
+
 
     init {
         getCurrentUser()
@@ -60,11 +64,19 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-
     fun logout() {
         viewModelScope.launch {
-            userRepository.logout()
-            _logoutUser.value = ResultState.Initial
+            _logoutUser.value = ResultState.Loading
+            try {
+                userRepository.logout().collect { result ->
+                    _logoutUser.value = result
+                    if (result is ResultState.Success) {
+                        authPreferences.clearSession()
+                    }
+                }
+            } catch (e: Exception) {
+                _logoutUser.value = ResultState.Error("Logout failed: ${e.message}")
+            }
         }
     }
 

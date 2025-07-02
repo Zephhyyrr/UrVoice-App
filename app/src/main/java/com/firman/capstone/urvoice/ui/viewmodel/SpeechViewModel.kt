@@ -56,7 +56,6 @@ class SpeechViewModel @Inject constructor(
 
             Log.d(TAG, "Audio file path: ${audioFile?.absolutePath}")
 
-            // Initialize MediaRecorder with better error handling
             mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(context)
             } else {
@@ -203,7 +202,6 @@ class SpeechViewModel @Inject constructor(
         super.onCleared()
         Log.d(TAG, "ViewModel cleared, cleaning up...")
 
-        // Clean up MediaRecorder if still active
         try {
             mediaRecorder?.apply {
                 if (_isRecording.value) {

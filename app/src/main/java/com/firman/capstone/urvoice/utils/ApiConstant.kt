@@ -22,4 +22,6 @@ object ApiConstant {
     const val SPEECH_TO_TEXT = "api/models/speech-to-text"
     const val ANALYZE_TEXT = "api/models/analyze-speech"
 
+    // History Hit API
+
 }
