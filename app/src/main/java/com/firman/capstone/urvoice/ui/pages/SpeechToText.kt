@@ -1,5 +1,6 @@
 package com.firman.capstone.urvoice.ui.pages
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +13,11 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ import com.firman.capstone.urvoice.ui.theme.primaryColor
 import com.firman.capstone.urvoice.ui.theme.whiteBackground
 import com.firman.capstone.urvoice.ui.theme.whiteColor
 import com.firman.capstone.urvoice.ui.viewmodel.SpeechViewModel
+import com.firman.capstone.urvoice.utils.ResultState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonType
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSJetPackComposeProgressButton
@@ -51,12 +53,33 @@ fun SpeechToTextScreen(
     viewModel: SpeechViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
     onNavigateRecordScreen: () -> Unit = {},
-    onNavigateAnalyzeScreen: () -> Unit = {}
+    onNavigateAnalyzeScreen: (String, String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     var retryRecordStateButton by remember { mutableStateOf(SSButtonState.IDLE) }
     var analyzeStateButton by remember { mutableStateOf(SSButtonState.IDLE) }
-    val convertedText = viewModel.convertedText.collectAsStateWithLifecycle().value
+
+    val convertedText by viewModel.convertedText.collectAsStateWithLifecycle()
+    val audioFileName by viewModel.audioFileName.collectAsStateWithLifecycle()
+    val speechToTextState by viewModel.speechToTextState.collectAsStateWithLifecycle()
+
+    // Handle speech to text state changes
+    LaunchedEffect(speechToTextState) {
+        when (speechToTextState) {
+            is ResultState.Success -> {
+                Log.d("SpeechToTextScreen", "Speech to text success with filename: $audioFileName")
+            }
+
+            is ResultState.Error -> {
+                Log.e(
+                    "SpeechToTextScreen",
+                    "Speech to text error: ${(speechToTextState as ResultState.Error).errorMessage}"
+                )
+            }
+
+            else -> {}
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -66,14 +89,17 @@ fun SpeechToTextScreen(
                         text = stringResource(R.string.speech_to_text_title),
                         fontSize = 14.sp,
                         fontFamily = PoppinsSemiBold,
-                        color = primaryColor
+                        color = whiteColor
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = primaryColor
                 ),
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = {
+                        viewModel.resetState() // Clean up when navigating back
+                        onBackClick()
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_close_white),
                             contentDescription = stringResource(R.string.back),
@@ -96,7 +122,8 @@ fun SpeechToTextScreen(
             ) {
                 Box(modifier = Modifier.weight(1f)) {
                     SpeechToTextCard(
-                        text = convertedText.ifEmpty { stringResource(R.string.example_speech_to_text) }
+                        text = convertedText.ifEmpty { stringResource(R.string.example_speech_to_text) },
+                        isLoading = speechToTextState is ResultState.Loading
                     )
                 }
 
@@ -116,7 +143,8 @@ fun SpeechToTextScreen(
                         onClick = {
                             coroutineScope.launch {
                                 retryRecordStateButton = SSButtonState.LOADING
-                                delay(1000)
+                                viewModel.resetState()
+                                delay(500)
                                 retryRecordStateButton = SSButtonState.IDLE
                                 onNavigateRecordScreen()
                             }
@@ -142,9 +170,18 @@ fun SpeechToTextScreen(
                         onClick = {
                             coroutineScope.launch {
                                 analyzeStateButton = SSButtonState.LOADING
-                                delay(1000)
-                                analyzeStateButton = SSButtonState.IDLE
-                                onNavigateAnalyzeScreen()
+
+                                val textToAnalyze = convertedText
+                                val currentAudioFileName = audioFileName
+
+                                if (textToAnalyze.isNotEmpty() && currentAudioFileName.isNotEmpty()) {
+                                    analyzeStateButton = SSButtonState.SUCCESS
+                                    onNavigateAnalyzeScreen(textToAnalyze, currentAudioFileName)
+                                } else {
+                                    analyzeStateButton = SSButtonState.FAILURE
+                                    delay(2000)
+                                    analyzeStateButton = SSButtonState.IDLE
+                                }
                             }
                         },
                         cornerRadius = 100,
@@ -156,6 +193,7 @@ fun SpeechToTextScreen(
                             contentColor = whiteColor,
                             disabledContainerColor = primaryColor,
                         ),
+                        enabled = convertedText.isNotEmpty() && audioFileName.isNotEmpty() && analyzeStateButton == SSButtonState.IDLE,
                         text = stringResource(R.string.button_analyze_grammar),
                         fontSize = 14.sp,
                         fontFamily = PoppinsSemiBold
@@ -163,15 +201,5 @@ fun SpeechToTextScreen(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SpeechToTextScreenPreview() {
-    UrVoiceTheme {
-        SpeechToTextScreen(
-            onBackClick = {}
-        )
     }
 }

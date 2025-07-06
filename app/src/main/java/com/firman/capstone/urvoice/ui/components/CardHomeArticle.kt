@@ -29,7 +29,7 @@ fun CardHomeArticle(
             .size(width = 327.dp, height = 180.dp)
             .clickable { onClick() }
     ) {
-        val fullImageUrl = MediaUrlUtils.buildImageUrl(imageUrl)
+        val fullImageUrl = MediaUrlUtils.buildMediaUrl(imageUrl)
 
         SubcomposeAsyncImage(
             model = fullImageUrl,

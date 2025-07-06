@@ -40,7 +40,7 @@ fun CardArticle(title: String, content: String, imageUrl: String, onClick: () ->
             modifier = Modifier.fillMaxSize()
         ) {
             SubcomposeAsyncImage(
-                model = MediaUrlUtils.buildImageUrl(imageUrl),
+                model = MediaUrlUtils.buildMediaUrl(imageUrl),
                 contentDescription = "Article image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

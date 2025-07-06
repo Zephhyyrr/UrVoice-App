@@ -1,28 +1,32 @@
 package com.firman.capstone.urvoice
 
 import android.app.Activity
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.firman.capstone.urvoice.ui.navigation.BottomAppBarWithFab
 import com.firman.capstone.urvoice.ui.navigation.BottomNavItem
 import com.firman.capstone.urvoice.ui.navigation.Screen
+import com.firman.capstone.urvoice.ui.pages.AnalyzeScreen
 import com.firman.capstone.urvoice.ui.pages.ArticleDetailScreen
 import com.firman.capstone.urvoice.ui.pages.ArticleScreen
 import com.firman.capstone.urvoice.ui.pages.EditProfileScreen
+import com.firman.capstone.urvoice.ui.pages.HistoryDetailScreen
+import com.firman.capstone.urvoice.ui.pages.HistoryScreen
 import com.firman.capstone.urvoice.ui.pages.HomeScreen
 import com.firman.capstone.urvoice.ui.pages.LoginScreen
 import com.firman.capstone.urvoice.ui.pages.OnBoardingScreen
@@ -36,6 +40,9 @@ import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
 import com.firman.capstone.urvoice.ui.viewmodel.ArticleViewModel
 import com.firman.capstone.urvoice.ui.viewmodel.ProfileViewModel
 import com.firman.capstone.urvoice.ui.viewmodel.SpeechViewModel
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun UrVoiceRootApp(
@@ -125,6 +132,31 @@ fun UrVoiceRootApp(
                 )
             }
 
+            composable(
+                route = "analyze/{text}/{audioFileName}",
+                arguments = listOf(
+                    navArgument("text") { type = NavType.StringType },
+                    navArgument("audioFileName") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val encodedText = backStackEntry.arguments?.getString("text") ?: ""
+                val encodedAudio = backStackEntry.arguments?.getString("audioFileName") ?: ""
+
+                val text = URLDecoder.decode(encodedText, StandardCharsets.UTF_8.toString())
+                val audioFileName = URLDecoder.decode(encodedAudio, StandardCharsets.UTF_8.toString())
+
+                AnalyzeScreen(
+                    text = text,
+                    audioFileName = audioFileName,
+                    onBackClick = { navController.popBackStack() },
+                    onNavigateToHistory = {
+                        navController.navigate(Screen.History.route) {
+                            popUpTo(Screen.History.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             composable(Screen.SpeechToText.route) {
                 SpeechToTextScreen(
                     viewModel = sharedSpeechViewModel,
@@ -134,18 +166,36 @@ fun UrVoiceRootApp(
                     onNavigateRecordScreen = {
                         navController.navigate(Screen.Record.route)
                     },
-                    onNavigateAnalyzeScreen = {
-                        navController.navigate(Screen.Analzye.route) {
+                    onNavigateAnalyzeScreen = { text, fileName ->
+                        val encodedText = URLEncoder.encode(text, StandardCharsets.UTF_8.toString())
+                        val encodedAudio = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
+
+                        navController.navigate("analyze/$encodedText/$encodedAudio") {
                             popUpTo(Screen.SpeechToText.route) { inclusive = true }
                         }
                     }
                 )
             }
 
+            // Di bagian NavHost
             composable(Screen.History.route) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("History Screen", fontSize = 24.sp)
-                }
+                HistoryScreen(
+                    onHistoryItemClick = { historyData ->
+                        navController.navigate(Screen.HistoryDetail(historyData.id).createRoute())
+                    }
+                )
+            }
+
+            composable(
+                route = "history_detail/{id}", // harus sesuai dengan definisi pattern
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val historyId = backStackEntry.arguments?.getInt("id") ?: return@composable
+
+                HistoryDetailScreen(
+                    historyId = historyId,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
 
             composable(Screen.Profile.route) {

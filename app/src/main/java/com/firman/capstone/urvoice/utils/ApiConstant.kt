@@ -23,5 +23,7 @@ object ApiConstant {
     const val ANALYZE_TEXT = "api/models/analyze-speech"
 
     // History Hit API
-
+    const val HISTORY_LIST = "api/history/"
+    const val HISTORY_DETAIL = "api/history/{id}"
+    const val SAVE_HISTORY = "api/history/save"
 }

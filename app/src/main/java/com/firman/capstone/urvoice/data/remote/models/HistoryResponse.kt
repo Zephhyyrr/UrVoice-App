@@ -2,7 +2,7 @@ package com.firman.capstone.urvoice.data.remote.models
 
 import com.google.gson.annotations.SerializedName
 
-data class AnalyzeResponse(
+data class HistoryResponse(
     @SerializedName("message")
     val message: String? = null,
 
@@ -10,11 +10,26 @@ data class AnalyzeResponse(
     val success: Boolean = false,
 
     @SerializedName("data")
-    val data: Data? = null
+    val data: List<Data>? = null
 ) {
     data class Data(
-        @SerializedName("corrected_paragraph")
+        @SerializedName("id")
+        val id: Int,
+
+        @SerializedName("fileAudio")
+        val fileAudio: String? = null,
+
+        @SerializedName("originalParagraph")
+        val originalParagraph: String? = null,
+
+        @SerializedName("correctedParagraph")
         val correctedParagraph: String? = null,
+
+        @SerializedName("createdAt")
+        val createdAt: String? = null,
+
+        @SerializedName("updatedAt")
+        val updatedAt: String? = null,
 
         @SerializedName("grammar_analysis")
         val grammarAnalysis: List<GrammarAnalysis>? = null

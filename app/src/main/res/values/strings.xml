@@ -92,4 +92,20 @@
     <string name="account_already_exists_title">Akun sudah terdaftar</string>
     <string name="account_already_exists_message">Akun anda sudah terdaftar silahkan login sekarang!</string>
     <string name="login_now">Login</string>
+    <string name="corrected_paragraph_title">Corrected Paragraph:</string>
+    <string name="no_correction_available">No correction available</string>
+    <string name="grammar_analysis_title">Grammar Analysis:</string>
+    <string name="analisis_title">Analisis</string>
+    <string name="button_save_analyze">Simpan Analisis</string>
+    <string name="menu_history_title">History</string>
+    <string name="go_detail_description">Go to detail</string>
+    <string name="loading_audio">Memutar...</string>
+    <string name="pause_audio">⏸ Pause Audio</string>
+    <string name="failed_play_audio">Gagal</string>
+    <string name="play_audio">▶ Play Audio</string>
+    <string name="history_detail_title">Detail History</string>
+    <string name="audio_recording">Rekaman Audio</string>
+    <string name="original_paragraph_title">Original Paragraph:</string>
+    <string name="no_content_available">No Content</string>
+    <string name="nodata_history_title">Belum ada history</string>
 </resources>

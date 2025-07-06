@@ -243,7 +243,7 @@ private fun ProfileCard(
 
         is ResultState.Success -> {
             val imageUrl = state.data.data?.profileImage?.let {
-                MediaUrlUtils.buildImageUrl(it.toString())
+                MediaUrlUtils.buildMediaUrl(it.toString())
             } ?: ""
 
             ProfileCardContent(

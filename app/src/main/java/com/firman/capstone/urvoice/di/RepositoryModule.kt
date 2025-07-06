@@ -1,7 +1,11 @@
 package com.firman.capstone.urvoice.di
 
+import com.firman.capstone.urvoice.data.repository.analyze.AnalyzeRepository
+import com.firman.capstone.urvoice.data.repository.analyze.AnalyzeRepositoryImpl
 import com.firman.capstone.urvoice.data.repository.article.ArticleRepository
 import com.firman.capstone.urvoice.data.repository.article.ArticleRepositoryImpl
+import com.firman.capstone.urvoice.data.repository.history.HistoryRepository
+import com.firman.capstone.urvoice.data.repository.history.HistoryRepositoryImpl
 import com.firman.capstone.urvoice.data.repository.login.LoginRepository
 import com.firman.capstone.urvoice.data.repository.login.LoginRepositoryImpl
 import com.firman.capstone.urvoice.data.repository.register.RegisterRepository
@@ -38,4 +42,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSpeechRepository(speechRepositoryImpl: SpeechRepositoryImpl): SpeechRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAnalyzeRepository(analyzeRepositoryImpl: AnalyzeRepositoryImpl): AnalyzeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindHistoryRepository(historyRepositoryImpl: HistoryRepositoryImpl): HistoryRepository
 }

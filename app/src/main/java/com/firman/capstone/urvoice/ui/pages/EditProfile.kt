@@ -57,7 +57,7 @@ fun EditProfileScreen(
     val coroutineScope = rememberCoroutineScope()
     var showSuccessDialog by remember { mutableStateOf(false) }
     val imageUrl = (currentUserState as? ResultState.Success)?.data?.data?.profileImage?.let {
-        MediaUrlUtils.buildImageUrl(it.toString())
+        MediaUrlUtils.buildMediaUrl(it.toString())
     } ?: ""
 
     LaunchedEffect(currentUserState) {
@@ -131,7 +131,11 @@ fun EditProfileScreen(
                         ) {
                             LottieAnimation(
                                 modifier = Modifier.size(150.dp),
-                                composition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation)).value,
+                                composition = rememberLottieComposition(
+                                    LottieCompositionSpec.RawRes(
+                                        R.raw.loading_animation
+                                    )
+                                ).value,
                                 iterations = LottieConstants.IterateForever,
                                 contentScale = ContentScale.Fit
                             )

@@ -20,6 +20,6 @@ data class SpeechResponse(
         val audioFileName: String? = null,
 
         @SerializedName("audioPath")
-        val audioPath: Any? = null
+        val audioPath: String? = null
     )
 }

@@ -21,7 +21,8 @@ import com.firman.capstone.urvoice.ui.theme.whiteColor
 fun SpeechToTextCard(
     text: String,
     modifier: Modifier = Modifier,
-    elevation: Int = 2
+    elevation: Int = 2,
+    isLoading: Boolean
 ) {
     Card(
         modifier = modifier
