@@ -71,22 +71,15 @@ fun EditProfileScreen(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             uri?.let { selectedUri ->
-                Log.d("EditProfileScreen", "Selected URI: $selectedUri")
 
                 try {
-                    // More robust image validation
                     val isValidImage = GalleryUtils.isImageFile(selectedUri, context)
-                    Log.d("EditProfileScreen", "Is valid image: $isValidImage")
-
                     if (isValidImage) {
-                        Log.d("EditProfileScreen", "Navigating to image preview")
                         onNavigateToImagePreview(selectedUri)
                     } else {
-                        Log.d("EditProfileScreen", "Invalid image file")
                         showImagePermissionDialog = true
                     }
                 } catch (e: Exception) {
-                    Log.e("EditProfileScreen", "Error processing selected image", e)
                     showImagePermissionDialog = true
                 }
             } ?: run {
@@ -99,7 +92,6 @@ fun EditProfileScreen(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             uri?.let { selectedUri ->
-                Log.d("EditProfileScreen", "Selected URI: $selectedUri")
                 onNavigateToImagePreview(selectedUri)
             }
         }
@@ -172,7 +164,7 @@ fun EditProfileScreen(
                     ) {
                         AsyncImage(
                             model = imageUrl,
-                            contentDescription = "Profile Image",
+                            contentDescription = stringResource(R.string.profile_image_desc),
                             modifier = Modifier
                                 .size(92.dp)
                                 .clip(CircleShape),
@@ -284,8 +276,13 @@ fun EditProfileScreen(
                             value = userName,
                             onValueChange = {
                                 userName = it
-                                if (formSubmitted) nameError =
-                                    if (it.isEmpty()) "Nama tidak boleh kosong" else if (it.length < 3) "Nama minimal 3 karakter" else null
+                                if (formSubmitted) {
+                                    nameError = when {
+                                        it.isEmpty() -> context.getString(R.string.name_empty_error)
+                                        it.length < 3 -> context.getString(R.string.name_min_length_error)
+                                        else -> null
+                                    }
+                                }
                             },
                             placeholder = {
                                 Text(
@@ -335,7 +332,7 @@ fun EditProfileScreen(
                             onValueChange = {
                                 password = it
                                 if (formSubmitted) passwordError =
-                                    if (it.isNotEmpty() && it.length < 8) "Password minimal 8 karakter" else null
+                                    if (it.isNotEmpty() && it.length < 8) context.getString(R.string.password_min_length_error) else null
                             },
                             placeholder = { Text(text = "********", fontFamily = PoppinsRegular) },
                             isError = passwordError != null,

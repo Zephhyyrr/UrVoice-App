@@ -10,8 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.firman.capstone.urvoice.R
 import com.firman.capstone.urvoice.ui.theme.*
 import com.firman.capstone.urvoice.utils.MediaUrlUtils
 import java.io.File
@@ -44,7 +46,7 @@ fun AudioPlayerCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Audio Recording:",
+                text = stringResource(R.string.rekaman_audio),
                 fontSize = 14.sp,
                 fontFamily = PoppinsSemiBold,
                 color = textColor,

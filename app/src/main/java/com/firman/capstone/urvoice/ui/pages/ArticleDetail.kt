@@ -173,14 +173,14 @@ fun ArticleDetailScreen(
                             ) {
                                 Column(modifier = Modifier.padding(15.dp)) {
                                     Text(
-                                        text = article.title ?: "Judul tidak tersedia",
+                                        text = article.title ?: stringResource(R.string.no_title),
                                         fontSize = 12.sp,
                                         fontFamily = PoppinsSemiBold,
                                         color = textColor
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = article.content ?: "Deskripsi tidak tersedia",
+                                        text = article.content ?: stringResource(R.string.no_content),
                                         fontSize = 12.sp,
                                         fontFamily = PoppinsMedium,
                                         color = textColor

@@ -57,13 +57,10 @@ fun AnalyzeScreen(
     var analyzeStateButton by remember { mutableStateOf(SSButtonState.IDLE) }
     var isSaving by remember { mutableStateOf(false) }
 
-    // Observasi state dengan logging untuk debugging
     LaunchedEffect(saveHistoryState) {
-        Log.d("AnalyzeScreen", "Save history state changed: $saveHistoryState")
 
         when (saveHistoryState) {
             is ResultState.Success -> {
-                Log.d("AnalyzeScreen", "Save successful, navigating to history")
                 analyzeStateButton = SSButtonState.SUCCESS
                 isSaving = false
                 coroutineScope.launch {
@@ -72,7 +69,6 @@ fun AnalyzeScreen(
                 }
             }
             is ResultState.Error -> {
-                Log.e("AnalyzeScreen", "Save failed: ${(saveHistoryState as ResultState.Error).errorMessage}")
                 analyzeStateButton = SSButtonState.FAILURE
                 isSaving = false
                 delay(2000)
@@ -80,7 +76,6 @@ fun AnalyzeScreen(
             }
             is ResultState.Loading -> {
                 Log.d("AnalyzeScreen", "Save in progress...")
-                // Tidak mengubah button state di sini karena sudah di-set di onClick
             }
             else -> {
                 Log.d("AnalyzeScreen", "Save state: Initial/Other")
@@ -88,7 +83,6 @@ fun AnalyzeScreen(
         }
     }
 
-    // Initialize data and analyze
     LaunchedEffect(text, audioFileName) {
         viewModel.setInputData(text, audioFileName)
         viewModel.analyzeText()
@@ -143,7 +137,6 @@ fun AnalyzeScreen(
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        // Content
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -156,7 +149,6 @@ fun AnalyzeScreen(
                             )
                         }
 
-                        // Buttons
                         Row(
                             modifier = Modifier
                                 .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
@@ -174,7 +166,7 @@ fun AnalyzeScreen(
                                     coroutineScope.launch {
                                         retryRecordStateButton = SSButtonState.LOADING
                                         viewModel.resetState()
-                                        historyViewModel.resetSaveState() // Hanya reset save state
+                                        historyViewModel.resetSaveState()
                                         delay(500)
                                         retryRecordStateButton = SSButtonState.IDLE
                                         onBackClick()
@@ -200,13 +192,9 @@ fun AnalyzeScreen(
                                 buttonState = analyzeStateButton,
                                 onClick = {
                                     if (data != null && !isSaving) {
-                                        Log.d("AnalyzeScreen", "Save button clicked")
-
-                                        // Set state sebelum memulai operasi
                                         analyzeStateButton = SSButtonState.LOADING
                                         isSaving = true
 
-                                        // Prepare data
                                         val grammarAnalysis = data.grammarAnalysis?.map { grammar ->
                                             HistoryRequest.GrammarAnalysis(
                                                 corrected = grammar.corrected ?: "",
@@ -215,13 +203,6 @@ fun AnalyzeScreen(
                                             )
                                         } ?: emptyList()
 
-                                        Log.d("AnalyzeScreen", "Calling saveHistory with:")
-                                        Log.d("AnalyzeScreen", "- audioFileName: $audioFileName")
-                                        Log.d("AnalyzeScreen", "- originalParagraph: $text")
-                                        Log.d("AnalyzeScreen", "- correctedParagraph: ${data.correctedParagraph}")
-                                        Log.d("AnalyzeScreen", "- grammarAnalysis size: ${grammarAnalysis.size}")
-
-                                        // Call save history
                                         historyViewModel.saveHistory(
                                             audioFileName = audioFileName,
                                             originalParagraph = text,
@@ -241,9 +222,9 @@ fun AnalyzeScreen(
                                 ),
                                 enabled = !isSaving,
                                 text = when (analyzeStateButton) {
-                                    SSButtonState.LOADING -> "Menyimpan..."
-                                    SSButtonState.SUCCESS -> "Tersimpan!"
-                                    SSButtonState.FAILURE -> "Gagal!"
+                                    SSButtonState.LOADING -> stringResource(R.string.saving_progress)
+                                    SSButtonState.SUCCESS -> stringResource(R.string.saved)
+                                    SSButtonState.FAILURE -> stringResource(R.string.failed_save)
                                     else -> stringResource(R.string.button_save_analyze)
                                 },
                                 fontSize = 14.sp,
@@ -289,7 +270,7 @@ fun AnalyzeContent(
 
         item {
             SectionCard(
-                title = "Original Paragraph:",
+                title = stringResource(R.string.original_paragraph_title),
                 content = originalText
             )
         }
@@ -321,7 +302,7 @@ fun ErrorState(message: String, onRetry: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Terjadi kesalahan",
+                text = stringResource(R.string.error_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -337,7 +318,7 @@ fun ErrorState(message: String, onRetry: () -> Unit) {
                 modifier = Modifier.padding(top = 16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
             ) {
-                Text("Coba Lagi", color = whiteColor)
+                Text(stringResource(R.string.retry), color = whiteColor)
             }
         }
     }

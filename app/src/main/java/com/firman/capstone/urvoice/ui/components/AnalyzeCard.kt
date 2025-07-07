@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.firman.capstone.urvoice.R
 import com.firman.capstone.urvoice.data.remote.models.AnalyzeResponse
 import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
@@ -81,22 +83,20 @@ fun GrammarAnalysisCard(
                 color = textColor,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            // Original
             TextLabelValue(
-                label = "Original:",
-                value = grammar.original ?: "No original text available"
+                label = stringResource(R.string.original),
+                value = grammar.original ?: stringResource(R.string.no_original_text)
             )
 
-            // Corrected
             TextLabelValue(
-                label = "Corrected:",
-                value = grammar.corrected ?: "No correction available"
+                label = stringResource(R.string.corrected),
+                value = grammar.corrected ?: stringResource(R.string.no_correction_available)
             )
 
             // Reason
             TextLabelValue(
-                label = "Reason:",
-                value = grammar.reason ?: "No reason provided",
+                label = stringResource(R.string.reason),
+                value = grammar.reason ?: stringResource(R.string.no_reason_text),
                 isLast = true
             )
         }

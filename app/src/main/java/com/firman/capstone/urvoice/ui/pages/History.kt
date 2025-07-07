@@ -23,6 +23,7 @@ import com.firman.capstone.urvoice.R
 import com.firman.capstone.urvoice.data.remote.models.HistoryResponse
 import com.firman.capstone.urvoice.ui.components.HistoryCard
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
+import com.firman.capstone.urvoice.ui.theme.primaryColor
 import com.firman.capstone.urvoice.ui.theme.textColor
 import com.firman.capstone.urvoice.ui.theme.whiteColor
 import com.firman.capstone.urvoice.ui.viewmodel.HistoryViewModel
@@ -56,7 +57,7 @@ fun HistoryScreen(
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = primaryColor
                 )
             )
         },
@@ -152,7 +153,7 @@ fun HistoryScreen(
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "Terjadi kesalahan",
+                                text = stringResource(R.string.error_title),
                                 fontSize = 16.sp,
                                 color = MaterialTheme.colorScheme.error,
                                 textAlign = TextAlign.Center
@@ -172,7 +173,7 @@ fun HistoryScreen(
                                     containerColor = MaterialTheme.colorScheme.primary
                                 )
                             ) {
-                                Text(text = "Coba Lagi", color = whiteColor)
+                                Text(text = stringResource(R.string.retry), color = whiteColor)
                             }
                         }
                     }

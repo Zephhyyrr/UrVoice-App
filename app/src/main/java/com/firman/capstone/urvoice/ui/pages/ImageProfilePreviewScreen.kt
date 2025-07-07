@@ -46,7 +46,6 @@ fun ImageProfilePreviewScreen(
 
     val uploadState by viewModel.uploadProfileImageState.collectAsState()
 
-    // Handle upload state changes
     LaunchedEffect(uploadState) {
         when (uploadState) {
             is ResultState.Success -> {
@@ -77,7 +76,6 @@ fun ImageProfilePreviewScreen(
         }
     }
 
-    // Reset state when screen is disposed
     DisposableEffect(Unit) {
         onDispose {
             viewModel.resetUploadState()
@@ -129,7 +127,7 @@ fun ImageProfilePreviewScreen(
             ) {
                 AsyncImage(
                     model = imageUri,
-                    contentDescription = "Preview Image",
+                    contentDescription = stringResource(R.string.profile_preview_image),
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(16.dp)),
@@ -151,7 +149,6 @@ fun ImageProfilePreviewScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Upload Button
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CIRCLE,
                 width = 380.dp,
@@ -164,7 +161,6 @@ fun ImageProfilePreviewScreen(
                                 isProcessing = true
                                 uploadButtonState = SSButtonState.LOADING
 
-                                // Validate image first
                                 if (!GalleryUtils.isImageFile(imageUri, context)) {
                                     errorMessage = context.getString(R.string.invalid_image_format)
                                     showErrorDialog = true
@@ -182,7 +178,6 @@ fun ImageProfilePreviewScreen(
                                 )
 
                                 if (imageFile != null) {
-                                    // Check file size (optional)
                                     val fileSizeInMB = GalleryUtils.getFileSizeInMB(imageFile)
                                     if (fileSizeInMB > 5.0) { // 5MB limit
                                         errorMessage = context.getString(R.string.image_too_large)

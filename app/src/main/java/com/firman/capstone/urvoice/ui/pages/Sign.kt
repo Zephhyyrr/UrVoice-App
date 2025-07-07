@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import com.firman.capstone.urvoice.ui.theme.primaryColor
 import com.firman.capstone.urvoice.ui.theme.whiteBackground
 import com.firman.capstone.urvoice.ui.theme.whiteColor
@@ -43,12 +44,6 @@ data class SignModel(
     val title: String,
     val description: String,
     val imagesRes: Int,
-)
-
-val signModel = SignModel(
-    title = "Mari Tingkatkan Percaya Diri English Speaking Anda",
-    description = "Bergabunglah sekarang untuk melatih kemampuan speaking Anda dan jadikan Bahasa Inggris sebagai kekuatan Anda!",
-    imagesRes = R.drawable.iv_login
 )
 
 @Composable
@@ -92,6 +87,11 @@ fun SignItem(page: SignModel) {
 
 @Composable
 fun SignScreen(navController: NavController) {
+    val signModel = SignModel(
+        title = stringResource(R.string.sign_title),
+        description = stringResource(R.string.sign_desc),
+        imagesRes = R.drawable.iv_login
+    )
     var loginButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
     var registerButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
 

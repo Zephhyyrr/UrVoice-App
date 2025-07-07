@@ -151,7 +151,7 @@ private fun UserHeader(user: CurrentUserResponse) {
             .fillMaxWidth()
             .padding(top = 24.dp)
     ) {
-        ProfileIcon(user.data?.profileImage as String)
+        ProfileIcon(user.data?.profileImage?.toString() ?: "")
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             modifier = Modifier

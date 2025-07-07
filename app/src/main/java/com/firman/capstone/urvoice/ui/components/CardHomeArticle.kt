@@ -12,7 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.firman.capstone.urvoice.R
 import coil3.compose.SubcomposeAsyncImage
 import com.firman.capstone.urvoice.utils.MediaUrlUtils
 
@@ -33,7 +35,7 @@ fun CardHomeArticle(
 
         SubcomposeAsyncImage(
             model = fullImageUrl,
-            contentDescription = "Article image",
+            contentDescription = stringResource(R.string.article_image_desc),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
             error = {
@@ -43,7 +45,7 @@ fun CardHomeArticle(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "❌ Image not available",
+                            text = stringResource(R.string.no_image_available),
                             color = Color.Gray,
                             style = MaterialTheme.typography.bodySmall
                         )

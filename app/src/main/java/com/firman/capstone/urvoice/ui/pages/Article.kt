@@ -28,6 +28,7 @@ import com.firman.capstone.urvoice.ui.theme.whiteColor
 import com.firman.capstone.urvoice.utils.ResultState
 import com.firman.capstone.urvoice.ui.viewmodel.ArticleViewModel
 import com.firman.capstone.urvoice.ui.navigation.Screen
+import com.firman.capstone.urvoice.ui.theme.primaryColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +51,7 @@ fun ArticleScreen(
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = primaryColor
                 )
             )
         },
@@ -116,7 +117,7 @@ fun ArticleScreen(
                         ) {
                             items(articles) { article ->
                                 CardArticle(
-                                    title = article.title ?: "Tanpa Judul",
+                                    title = article.title ?: "",
                                     content = article.content ?: "",
                                     imageUrl = article.image ?: "",
                                     onClick = {

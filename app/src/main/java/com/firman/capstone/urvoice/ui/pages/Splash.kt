@@ -33,7 +33,6 @@ fun SplashScreen(navController: NavController, viewModel: SplashViewModel = hilt
         iterations = 1
     )
 
-    // Navigation logic
     LaunchedEffect(progress, appStartupState) {
         if (progress >= 1f && !appStartupState.isLoading) {
             when {

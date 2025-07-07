@@ -75,7 +75,6 @@ fun RecordScreen(
         }
     }
 
-    // Lottie animations
     val stopAnimationComposition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.stop_animation)
     )
@@ -88,26 +87,17 @@ fun RecordScreen(
         restartOnPlay = true
     )
 
-    // Handle speech-to-text result and setup audio
     LaunchedEffect(speechToTextState) {
         if (speechToTextState is ResultState.Success && convertedText.isNotEmpty() && !isConfirmationAccepted) {
             val data = (speechToTextState as ResultState.Success).data
             recordedText = data.text ?: ""
             audioUrl = MediaUrlUtils.buildMediaUrl(data.audioPath)
-            audioFileName = data.audioFileName // This is from the API response
-
-            // DEBUG: Add logging to verify the data
-            Log.d("RecordScreen", "API Response Data:")
-            Log.d("RecordScreen", "  - text: ${data.text}")
-            Log.d("RecordScreen", "  - audioPath: ${data.audioPath}")
-            Log.d("RecordScreen", "  - audioFileName: ${data.audioFileName}")
-            Log.d("RecordScreen", "  - audioUrl: $audioUrl")
+            audioFileName = data.audioFileName
 
             showConfirmationDialog = true
         }
     }
 
-    // Recording click handler
     val handleRecordingClick = remember {
         {
             if (!hasAudioPermission) {
@@ -129,14 +119,12 @@ fun RecordScreen(
         }
     }
 
-    // Confirmation dialog
     if (showConfirmationDialog) {
         AudioConfirmationDialog(
             audioUrl = audioUrl,
             onConfirm = {
                 showConfirmationDialog = false
                 isConfirmationAccepted = true
-                // Pass the audioFileName from API response to navigation
                 audioFileName?.let { fileName ->
                     Log.d("RecordScreen", "Navigating with audioFileName: $fileName")
                     onNavigateToSpeechToText(fileName)
@@ -151,7 +139,6 @@ fun RecordScreen(
         )
     }
 
-    // Rest of your Scaffold and UI code remains the same...
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -164,7 +151,7 @@ fun RecordScreen(
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = primaryColor
                 )
             )
         },
@@ -186,11 +173,11 @@ fun RecordScreen(
                 // Status text
                 Text(
                     text = when {
-                        !hasAudioPermission -> "Izin mikrofon diperlukan untuk merekam. Ketuk mikrofon untuk mengizinkan."
-                        isRecording -> "🔴 Sedang merekam... (Ketuk untuk berhenti)"
-                        speechToTextState is ResultState.Loading -> "⏳ Memproses audio menjadi teks..."
-                        speechToTextState is ResultState.Error -> "Terjadi kesalahan"
-                        else -> "Tekan tombol mikrofon untuk memulai merekam"
+                        !hasAudioPermission -> stringResource(R.string.audio_permission)
+                        isRecording -> stringResource(R.string.recording_in_progress)
+                        speechToTextState is ResultState.Loading -> stringResource(R.string.loading_transcription)
+                        speechToTextState is ResultState.Error -> stringResource(R.string.error_title)
+                        else -> stringResource(R.string.record_instructions)
                     },
                     style = TextStyle(
                         fontSize = 14.sp,
@@ -209,7 +196,6 @@ fun RecordScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Action buttons (only show when text is available and dialog is not shown)
                 if (convertedText.isNotEmpty() && !showConfirmationDialog) {
                     Spacer(modifier = Modifier.height(24.dp))
                     Row(
@@ -231,11 +217,10 @@ fun RecordScreen(
                         Button(
                             onClick = {
                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                // Add save functionality here
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Simpan", fontFamily = PoppinsMedium)
+                            Text(stringResource(R.string.save), fontFamily = PoppinsMedium)
                         }
                     }
                 }
@@ -243,7 +228,6 @@ fun RecordScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
 
-            // Center microphone/animation area
             Box(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -252,7 +236,6 @@ fun RecordScreen(
             ) {
                 when {
                     isRecording && stopAnimationComposition != null -> {
-                        // Recording animation
                         Box(
                             modifier = Modifier
                                 .size(280.dp)
@@ -273,7 +256,6 @@ fun RecordScreen(
                     }
 
                     speechToTextState is ResultState.Loading -> {
-                        // Loading animation
                         val loadingAnimationComposition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.loading_animation)
                         )
@@ -291,7 +273,6 @@ fun RecordScreen(
                     }
 
                     else -> {
-                        // Default microphone animation
                         val micAnimationComposition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.mic_animation)
                         )
@@ -333,7 +314,6 @@ private fun AudioConfirmationDialog(
     var isPlaying by remember { mutableStateOf(false) }
     val mediaPlayer = remember { MediaPlayer() }
 
-    // Setup MediaPlayer
     LaunchedEffect(audioUrl) {
         if (!audioUrl.isNullOrBlank()) {
             try {
@@ -341,7 +321,6 @@ private fun AudioConfirmationDialog(
                 mediaPlayer.setDataSource(audioUrl)
                 mediaPlayer.prepareAsync()
                 mediaPlayer.setOnPreparedListener {
-                    // Ready to play
                 }
                 mediaPlayer.setOnCompletionListener {
                     isPlaying = false
@@ -352,7 +331,6 @@ private fun AudioConfirmationDialog(
         }
     }
 
-    // Release MediaPlayer saat keluar
     DisposableEffect(Unit) {
         onDispose {
             if (mediaPlayer.isPlaying) {
@@ -366,7 +344,7 @@ private fun AudioConfirmationDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Perekaman Berhasil!",
+                text = stringResource(R.string.record_success_title),
                 style = TextStyle(
                     fontSize = 16.sp,
                     color = textColor,
@@ -377,7 +355,7 @@ private fun AudioConfirmationDialog(
         text = {
             Column {
                 Text(
-                    text = "Apakah Anda ingin mengubah ini ke teks?",
+                    text = stringResource(R.string.transcription_confirmation_text),
                     modifier = Modifier.padding(bottom = 8.dp),
                     style = TextStyle(
                         fontSize = 14.sp,
@@ -407,7 +385,7 @@ private fun AudioConfirmationDialog(
         confirmButton = {
             Button(onClick = onConfirm) {
                 Text(
-                    "Iya",
+                    stringResource(R.string.yes),
                     style = TextStyle(
                         fontSize = 14.sp,
                         color = whiteColor,
@@ -425,7 +403,7 @@ private fun AudioConfirmationDialog(
                 border = BorderStroke(1.dp, primaryColor)
             ) {
                 Text(
-                    "Rekam Ulang",
+                    text = stringResource(R.string.retry_record_title),
                     style = TextStyle(
                         fontSize = 14.sp,
                         color = primaryColor,

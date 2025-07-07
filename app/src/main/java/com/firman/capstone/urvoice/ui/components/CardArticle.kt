@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,7 +42,7 @@ fun CardArticle(title: String, content: String, imageUrl: String, onClick: () ->
         ) {
             SubcomposeAsyncImage(
                 model = MediaUrlUtils.buildMediaUrl(imageUrl),
-                contentDescription = "Article image",
+                contentDescription = stringResource(R.string.article_image_desc),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(120.dp),
@@ -90,7 +91,7 @@ fun CardArticle(title: String, content: String, imageUrl: String, onClick: () ->
 
                 Image(
                     painter = painterResource(R.drawable.arrow_right),
-                    contentDescription = "Arrow Icon",
+                    contentDescription = stringResource(R.string.article_arrow_desc),
                     modifier = Modifier
                         .size(24.dp)
                         .align(Alignment.CenterEnd),

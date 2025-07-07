@@ -97,7 +97,7 @@ fun SpeechToTextScreen(
                 ),
                 navigationIcon = {
                     IconButton(onClick = {
-                        viewModel.resetState() // Clean up when navigating back
+                        viewModel.resetState()
                         onBackClick()
                     }) {
                         Icon(

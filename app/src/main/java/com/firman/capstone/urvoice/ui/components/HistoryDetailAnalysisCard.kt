@@ -32,13 +32,13 @@ fun HistoryDetailAnalysisCard(
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
-            AnalysisItem(label = "Original", text = grammar.original)
+            AnalysisItem(label = stringResource(R.string.original), text = grammar.original)
             Spacer(modifier = Modifier.height(8.dp))
 
-            AnalysisItem(label = "Corrected", text = grammar.corrected, highlight = true)
+            AnalysisItem(label = stringResource(R.string.corrected), text = grammar.corrected, highlight = true)
             Spacer(modifier = Modifier.height(8.dp))
 
-            AnalysisItem(label = "Reason", text = grammar.reason)
+            AnalysisItem(label = stringResource(R.string.reason), text = grammar.reason)
         }
     }
 }

@@ -247,8 +247,8 @@ private fun ProfileCard(
             } ?: ""
 
             ProfileCardContent(
-                name = state.data.data?.name ?: "Unknown User",
-                email = state.data.data?.email ?: "No email",
+                name = state.data.data?.name ?: stringResource(R.string.unknown_name),
+                email = state.data.data?.email ?: stringResource(R.string.no_email_provided),
                 profileImage = imageUrl,
                 onEditClick = onEditClick
             )
@@ -312,14 +312,14 @@ private fun SettingsItem(
             Text(
                 text = title,
                 fontSize = 14.sp,
-                color = Color.Black,
+                color = textColor,
                 fontFamily = PoppinsMedium,
                 modifier = Modifier.weight(1f)
             )
 
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Arrow",
+                contentDescription = stringResource(R.string.navigate_forward),
                 tint = Color.Black,
                 modifier = Modifier.size(16.dp)
             )
