@@ -4,7 +4,7 @@
     <string name="onboarding_description_1">We provide English speech-to-text and grammar correction to help you improve your public speaking skills in English.</string>
     <string name="onboarding_title_2">An App to Analyze Your Speaking Skills</string>
     <string name="onboarding_description_2">Analyze your speaking using Generative AI technology.</string>
-    <string name="onboarding_title_3">Let's Boost Your English Speaking Confidence</string>
+    <string name="onboarding_title_3">Let\'s Boost Your English Speaking Confidence</string>
     <string name="onboarding_description_3">Start now and boost your confidence in speaking English.</string>
     <string name="button_start_now">Start Now</string>
     <string name="button_back">Back</string>
@@ -24,7 +24,7 @@
     <string name="password_empty_error">Password cannot be empty</string>
     <string name="password_min_length_error">Password must be at least 8 characters</string>
     <string name="name_min_length_error">Name must be at least 3 characters</string>
-    <string name="register_link">Don't have an account? Register here</string>
+    <string name="register_link">Don\'t have an account? Register here</string>
     <string name="login_link">Already have an account? Login here</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
