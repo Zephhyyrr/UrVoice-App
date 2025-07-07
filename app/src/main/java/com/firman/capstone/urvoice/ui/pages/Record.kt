@@ -1,6 +1,8 @@
 package com.firman.capstone.urvoice.ui.pages
 
 import android.Manifest
+import android.media.MediaPlayer
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.LocalIndication
@@ -8,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +32,7 @@ import com.airbnb.lottie.compose.*
 import com.firman.capstone.urvoice.R
 import com.firman.capstone.urvoice.ui.theme.*
 import com.firman.capstone.urvoice.ui.viewmodel.SpeechViewModel
+import com.firman.capstone.urvoice.utils.MediaUrlUtils
 import com.firman.capstone.urvoice.utils.ResultState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,15 +40,18 @@ import com.firman.capstone.urvoice.utils.ResultState
 fun RecordScreen(
     modifier: Modifier = Modifier,
     viewModel: SpeechViewModel = hiltViewModel(),
-    onNavigateToSpeechToText: () -> Unit = {}
+    onNavigateToSpeechToText: (String) -> Unit = {} // Changed to accept audioFileName parameter
 ) {
-    val context = LocalContext.current
     val hapticFeedback = LocalHapticFeedback.current
+    val context = LocalContext.current
 
     val speechToTextState by viewModel.speechToTextState.collectAsStateWithLifecycle()
     val isRecording by viewModel.isRecording.collectAsStateWithLifecycle()
     val convertedText by viewModel.convertedText.collectAsStateWithLifecycle()
 
+    var audioUrl by remember { mutableStateOf<String?>(null) }
+    var audioFileName by remember { mutableStateOf<String?>(null) }
+    var isConfirmationAccepted by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var recordedText by remember { mutableStateOf("") }
 
@@ -58,7 +65,6 @@ fun RecordScreen(
     }
 
     var showPermissionRationale by remember { mutableStateOf(false) }
-
 
     val audioPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -82,8 +88,12 @@ fun RecordScreen(
     )
 
     LaunchedEffect(speechToTextState) {
-        if (speechToTextState is ResultState.Success && convertedText.isNotEmpty()) {
-            recordedText = convertedText
+        if (speechToTextState is ResultState.Success && convertedText.isNotEmpty() && !isConfirmationAccepted) {
+            val data = (speechToTextState as ResultState.Success).data
+            recordedText = data.text ?: ""
+            audioUrl = MediaUrlUtils.buildMediaUrl(data.audioPath)
+            audioFileName = data.audioFileName
+
             showConfirmationDialog = true
         }
     }
@@ -98,6 +108,7 @@ fun RecordScreen(
             if (speechToTextState is ResultState.Loading) {
                 return@remember
             }
+
             hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
 
             if (isRecording) {
@@ -109,55 +120,21 @@ fun RecordScreen(
     }
 
     if (showConfirmationDialog) {
-        AlertDialog(
-            onDismissRequest = { showConfirmationDialog = false },
-            title = {
-                Text(
-                    text = "Perekaman Berhasil!",
-                    fontFamily = PoppinsSemiBold
-                )
-            },
-            text = {
-                Column {
-                    Text(
-                        text = "Apakah Anda ingin mengubah ini ke teks?",
-                        fontFamily = PoppinsRegular,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Text(
-                            text = recordedText,
-                            modifier = Modifier.padding(12.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontFamily = PoppinsRegular
-                        )
-                    }
+        AudioConfirmationDialog(
+            audioUrl = audioUrl,
+            onConfirm = {
+                showConfirmationDialog = false
+                isConfirmationAccepted = true
+                audioFileName?.let { fileName ->
+                    Log.d("RecordScreen", "Navigating with audioFileName: $fileName")
+                    onNavigateToSpeechToText(fileName)
+                } ?: run {
+                    Log.e("RecordScreen", "audioFileName is null, cannot navigate")
                 }
             },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showConfirmationDialog = false
-                        onNavigateToSpeechToText()
-                    }
-                ) {
-                    Text("Iya", fontFamily = PoppinsMedium)
-                }
-            },
-            dismissButton = {
-                OutlinedButton(
-                    onClick = {
-                        showConfirmationDialog = false
-                        viewModel.resetState()
-                    }
-                ) {
-                    Text("Rekam Ulang", fontFamily = PoppinsMedium)
-                }
+            onDismiss = {
+                showConfirmationDialog = false
+                viewModel.resetState()
             }
         )
     }
@@ -174,7 +151,7 @@ fun RecordScreen(
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = primaryColor
                 )
             )
         },
@@ -193,56 +170,31 @@ fun RecordScreen(
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
 
+                // Status text
                 Text(
                     text = when {
-                        !hasAudioPermission -> "🚫 Izin mikrofon diperlukan untuk merekam. Ketuk mikrofon untuk mengizinkan."
-                        isRecording -> "🔴 Sedang merekam... (Ketuk untuk berhenti)"
-                        speechToTextState is ResultState.Loading -> "⏳ Memproses audio menjadi teks..."
-                        convertedText.isNotEmpty() -> "✅ Hasil konversi:"
-                        speechToTextState is ResultState.Error -> "❌ Terjadi kesalahan"
-                        else -> "🎤 Tekan tombol mikrofon untuk memulai merekam"
+                        !hasAudioPermission -> stringResource(R.string.audio_permission)
+                        isRecording -> stringResource(R.string.recording_in_progress)
+                        speechToTextState is ResultState.Loading -> stringResource(R.string.loading_transcription)
+                        speechToTextState is ResultState.Error -> stringResource(R.string.error_title)
+                        else -> stringResource(R.string.record_instructions)
                     },
                     style = TextStyle(
                         fontSize = 14.sp,
-                        color = textColor
+                        color = when {
+                            !hasAudioPermission -> MaterialTheme.colorScheme.error
+                            isRecording -> Color.Red
+                            speechToTextState is ResultState.Loading -> MaterialTheme.colorScheme.primary
+                            speechToTextState is ResultState.Error -> MaterialTheme.colorScheme.error
+                            else -> textColor
+                        },
+                        fontFamily = PoppinsMedium
                     ),
-                    fontFamily = PoppinsMedium,
-                    color = when {
-                        !hasAudioPermission -> MaterialTheme.colorScheme.error
-                        isRecording -> Color.Red
-                        speechToTextState is ResultState.Loading -> MaterialTheme.colorScheme.primary
-                        speechToTextState is ResultState.Error -> MaterialTheme.colorScheme.error
-                        else -> textColor
-                    },
                     textAlign = TextAlign.Center
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-
                 Spacer(modifier = Modifier.weight(1f))
-
-                val loadingAnimationComposition by rememberLottieComposition(
-                    LottieCompositionSpec.RawRes(R.raw.loading_animation)
-                )
-                val loadingAnimationProgress by animateLottieCompositionAsState(
-                    composition = loadingAnimationComposition,
-                    iterations = LottieConstants.IterateForever,
-                    isPlaying = true
-                )
-
-                if (speechToTextState is ResultState.Loading && !isRecording) {
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        LottieAnimation(
-                            composition = loadingAnimationComposition,
-                            progress = { loadingAnimationProgress },
-                            modifier = Modifier.size(100.dp)
-                        )
-                    }
-                }
 
                 if (convertedText.isNotEmpty() && !showConfirmationDialog) {
                     Spacer(modifier = Modifier.height(24.dp))
@@ -268,10 +220,11 @@ fun RecordScreen(
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Simpan", fontFamily = PoppinsMedium)
+                            Text(stringResource(R.string.save), fontFamily = PoppinsMedium)
                         }
                     }
                 }
+
                 Spacer(modifier = Modifier.height(32.dp))
             }
 
@@ -315,7 +268,7 @@ fun RecordScreen(
                         LottieAnimation(
                             composition = loadingAnimationComposition,
                             progress = { loadingAnimationProgress },
-                            modifier = Modifier.size(200.dp)
+                            modifier = Modifier.size(150.dp)
                         )
                     }
 
@@ -349,4 +302,115 @@ fun RecordScreen(
             }
         }
     }
+}
+
+@Composable
+private fun AudioConfirmationDialog(
+    audioUrl: String?,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    var isPlaying by remember { mutableStateOf(false) }
+    val mediaPlayer = remember { MediaPlayer() }
+
+    LaunchedEffect(audioUrl) {
+        if (!audioUrl.isNullOrBlank()) {
+            try {
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(audioUrl)
+                mediaPlayer.prepareAsync()
+                mediaPlayer.setOnPreparedListener {
+                }
+                mediaPlayer.setOnCompletionListener {
+                    isPlaying = false
+                }
+            } catch (_: Exception) {
+                isPlaying = false
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+            }
+            mediaPlayer.release()
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.record_success_title),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    color = textColor,
+                    fontFamily = PoppinsMedium
+                )
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.transcription_confirmation_text),
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = textColor,
+                        fontFamily = PoppinsMedium
+                    )
+                )
+
+                if (!audioUrl.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            if (isPlaying) {
+                                mediaPlayer.pause()
+                                isPlaying = false
+                            } else {
+                                mediaPlayer.start()
+                                isPlaying = true
+                            }
+                        }
+                    ) {
+                        Text(if (isPlaying) "⏸ Pause Audio" else "▶ Play Audio")
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    stringResource(R.string.yes),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = whiteColor,
+                        fontFamily = PoppinsMedium
+                    )
+                )
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = primaryColor
+                ),
+                border = BorderStroke(1.dp, primaryColor)
+            ) {
+                Text(
+                    text = stringResource(R.string.retry_record_title),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        color = primaryColor,
+                        fontFamily = PoppinsMedium
+                    )
+                )
+            }
+        }
+    )
 }

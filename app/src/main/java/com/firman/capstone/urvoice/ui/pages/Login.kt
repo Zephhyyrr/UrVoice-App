@@ -4,13 +4,16 @@ import android.os.*
 import android.os.Looper
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
@@ -42,10 +45,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.firman.capstone.urvoice.R
+import com.firman.capstone.urvoice.ui.components.CustomAlertDialog
 import com.firman.capstone.urvoice.ui.navigation.Screen
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
@@ -106,6 +111,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
     var loginButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
     var loginAttempted by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
+    var failedLoginDialog by remember { mutableStateOf(false) }
 
     val emailSubject = remember { BehaviorSubject.createDefault("") }
     val passwordSubject = remember { BehaviorSubject.createDefault("") }
@@ -143,9 +149,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
 
                 Handler(Looper.getMainLooper()).postDelayed({
                     navController.navigate(Screen.Home.route) {
-                        popUpTo(0) {
-                            inclusive = true
-                        }
+                        popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
                 }, 2000)
@@ -154,12 +158,11 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
             is ResultState.Error -> {
                 loginButtonState = SSButtonState.FAILURE
                 val errorMessage = (loginState as ResultState.Error).errorMessage
-                Toast.makeText(
-                    context,
-                    errorMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
-
+                if (errorMessage.contains("500")) {
+                    failedLoginDialog = true
+                } else {
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                }
                 Handler(Looper.getMainLooper()).postDelayed({
                     loginButtonState = SSButtonState.IDLE
                 }, 500)
@@ -168,204 +171,228 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
     }
 
     DisposableEffect(Unit) {
-        val emailObservable = emailSubject
+        val emailObs = emailSubject
             .debounce(300, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { emailInput ->
+            .subscribe {
                 if (loginAttempted) {
-                    emailError = if (emailInput.isEmpty()) {
-                        context.getString(R.string.email_empty_error)
-                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
-                        context.getString(R.string.email_invalid_error)
-                    } else {
-                        null
-                    }
-                }
-            }
-        val passwordObservable = passwordSubject
-            .debounce(300, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { passwordInput ->
-                if (loginAttempted) {
-                    passwordError = if (passwordInput.isEmpty()) {
-                        context.getString(R.string.password_empty_error)
-                    } else if (passwordInput.length < 8) {
-                        context.getString(R.string.password_min_length_error)
-                    } else {
-                        null
+                    emailError = when {
+                        it.isEmpty() -> context.getString(R.string.email_empty_error)
+                        !android.util.Patterns.EMAIL_ADDRESS.matcher(it)
+                            .matches() -> context.getString(R.string.email_invalid_error)
+
+                        else -> null
                     }
                 }
             }
 
-        emailObservable.let { compositeDisposable.add(it) }
-        passwordObservable.let { compositeDisposable.add(it) }
+        val passObs = passwordSubject
+            .debounce(300, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                if (loginAttempted) {
+                    passwordError = when {
+                        it.isEmpty() -> context.getString(R.string.password_empty_error)
+                        it.length < 8 -> context.getString(R.string.password_min_length_error)
+                        else -> null
+                    }
+                }
+            }
 
-        onDispose {
-            compositeDisposable.clear()
-        }
+        compositeDisposable.addAll(emailObs, passObs)
+
+        onDispose { compositeDisposable.clear() }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 15.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        LoginItem()
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailSubject.onNext(it)
-            },
-            label = { Text(stringResource(R.string.email_label)) },
-            isError = emailError != null,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFE3F2FD),
-                unfocusedContainerColor = Color(0xFFE3F2FD),
-                focusedBorderColor = primaryColor,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            textStyle = TextStyle(
-                color = if (email.isNotEmpty()) textColor else greyTextColor
-            )
-        )
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            LoginItem()
 
-        if (emailError != null) {
-            Text(
-                text = emailError ?: "",
-                color = Color.Red,
-                style = TextStyle(fontSize = 12.sp),
+            OutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    emailSubject.onNext(it)
+                },
+                label = { Text(stringResource(R.string.email_label)) },
+                isError = emailError != null,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 4.dp, bottom = 8.dp)
+                    .padding(bottom = 8.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFE3F2FD),
+                    unfocusedContainerColor = Color(0xFFE3F2FD),
+                    focusedBorderColor = primaryColor,
+                    unfocusedBorderColor = Color.Transparent
+                ),
+                textStyle = TextStyle(
+                    color = if (email.isNotEmpty()) textColor else greyTextColor
+                )
             )
-        }
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                passwordSubject.onNext(it)
-            },
-            label = { Text(stringResource(R.string.password_label)) },
-            isError = passwordError != null,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFE3F2FD),
-                unfocusedContainerColor = Color(0xFFE3F2FD),
-                focusedBorderColor = primaryColor,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            textStyle = TextStyle(
-                color = if (password.isNotEmpty()) textColor else greyTextColor
-            ),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    if (passwordVisible) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.hide_password),
-                            tint = primaryColor,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    } else {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_eye_primary),
-                            contentDescription = stringResource(R.string.show_password),
-                            tint = primaryColor,
-                            modifier = Modifier.size(24.dp)
-                        )
+            if (emailError != null) {
+                Text(
+                    text = emailError!!,
+                    color = Color.Red,
+                    style = TextStyle(fontSize = 12.sp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, bottom = 8.dp)
+                )
+            }
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
+                    passwordSubject.onNext(it)
+                },
+                label = { Text(stringResource(R.string.password_label)) },
+                isError = passwordError != null,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xFFE3F2FD),
+                    unfocusedContainerColor = Color(0xFFE3F2FD),
+                    focusedBorderColor = primaryColor,
+                    unfocusedBorderColor = Color.Transparent
+                ),
+                textStyle = TextStyle(
+                    color = if (password.isNotEmpty()) textColor else greyTextColor
+                ),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        if (passwordVisible) {
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = null,
+                                tint = primaryColor,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Icon(
+                                painterResource(id = R.drawable.ic_eye_primary),
+                                contentDescription = null,
+                                tint = primaryColor,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
-            }
-        )
-
-        if (passwordError != null) {
-            Text(
-                text = passwordError ?: "",
-                color = Color.Red,
-                style = TextStyle(fontSize = 12.sp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 4.dp, bottom = 8.dp)
             )
+
+            if (passwordError != null) {
+                Text(
+                    text = passwordError!!,
+                    color = Color.Red,
+                    style = TextStyle(fontSize = 12.sp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, bottom = 8.dp)
+                )
+            }
+
+            SSJetPackComposeProgressButton(
+                type = SSButtonType.CIRCLE,
+                width = 382.dp,
+                height = 50.dp,
+                cornerRadius = 10,
+                assetColor = whiteColor,
+                text = stringResource(R.string.login_button),
+                textModifier = Modifier.padding(horizontal = 15.dp),
+                fontSize = 16.sp,
+                fontFamily = PoppinsSemiBold,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = primaryColor,
+                    contentColor = whiteColor,
+                    disabledContainerColor = primaryColor.copy(alpha = 0.6f)
+                ),
+                buttonState = loginButtonState,
+                onClick = {
+                    loginAttempted = true
+                    val isEmailValid = when {
+                        email.isEmpty() -> {
+                            emailError = context.getString(R.string.email_empty_error); false
+                        }
+
+                        !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                            emailError = context.getString(R.string.email_invalid_error); false
+                        }
+
+                        else -> {
+                            emailError = null; true
+                        }
+                    }
+                    val isPasswordValid = when {
+                        password.isEmpty() -> {
+                            passwordError = context.getString(R.string.password_empty_error); false
+                        }
+
+                        password.length < 8 -> {
+                            passwordError =
+                                context.getString(R.string.password_min_length_error); false
+                        }
+
+                        else -> {
+                            passwordError = null; true
+                        }
+                    }
+
+                    if (isEmailValid && isPasswordValid) {
+                        viewModel.login(email, password)
+                    }
+                }
+            )
+
+            TextButton(
+                onClick = {
+                    navController.navigate(Screen.Register.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
+                },
+                modifier = Modifier
+                    .padding(top = 24.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = stringResource(R.string.register_link),
+                    color = textColor,
+                    fontFamily = PoppinsSemiBold,
+                    style = TextStyle(fontSize = 14.sp)
+                )
+            }
         }
 
-        SSJetPackComposeProgressButton(
-            type = SSButtonType.CIRCLE,
-            width = 382.dp,
-            height = 50.dp,
-            cornerRadius = 10,
-            assetColor = whiteColor,
-            text = stringResource(R.string.login_button),
-            textModifier = Modifier.padding(horizontal = 15.dp),
-            fontSize = 16.sp,
-            fontFamily = PoppinsSemiBold,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = primaryColor,
-                contentColor = whiteColor,
-                disabledContainerColor = primaryColor.copy(alpha = 0.6f)
-            ),
-            buttonState = loginButtonState,
-            onClick = {
-                loginAttempted = true
-
-                val isEmailValid = if (email.isEmpty()) {
-                    emailError = context.getString(R.string.email_empty_error)
-                    false
-                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailError = context.getString(R.string.email_invalid_error)
-                    false
-                } else {
-                    emailError = null
-                    true
-                }
-
-                val isPasswordValid = if (password.isEmpty()) {
-                    passwordError = context.getString(R.string.password_empty_error)
-                    false
-                } else if (password.length < 8) {
-                    passwordError = context.getString(R.string.password_min_length_error)
-                    false
-                } else {
-                    passwordError = null
-                    true
-                }
-
-                if (isEmailValid && isPasswordValid) {
-                    viewModel.login(email, password)
-                }
-            },
-        )
-
-        TextButton(
-            onClick = {
-                navController.navigate("register") {
-                    popUpTo("login") { inclusive = true }
-                }
-            },
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = stringResource(R.string.register_link),
-                color = textColor,
-                fontFamily = PoppinsSemiBold,
-                style = TextStyle(fontSize = 14.sp)
-            )
+        if (failedLoginDialog) {
+            Dialog(onDismissRequest = { failedLoginDialog = false }) {
+                CustomAlertDialog(
+                    title = stringResource(R.string.email_not_registered_title),
+                    message = stringResource(R.string.email_not_registered_message),
+                    positiveText = stringResource(R.string.register_now),
+                    negativeText = stringResource(R.string.cancel),
+                    onConfirm = {
+                        failedLoginDialog = false
+                        navController.navigate(Screen.Register.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onDismiss = {
+                        failedLoginDialog = false
+                    }
+                )
+            }
         }
     }
 }

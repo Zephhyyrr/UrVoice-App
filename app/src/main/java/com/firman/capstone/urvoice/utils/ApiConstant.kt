@@ -16,10 +16,14 @@ object ApiConstant {
 
     // Article Hit API
     const val ARTICLE_LIST = "api/articles/getAll"
-    const val ARTICLE_DETAIL = "api/articles/{id}"
+    const val ARTICLE_DETAIL = "api/articles/getArticle/{id}"
 
     // Model Hit API
     const val SPEECH_TO_TEXT = "api/models/speech-to-text"
     const val ANALYZE_TEXT = "api/models/analyze-speech"
 
+    // History Hit API
+    const val HISTORY_LIST = "api/history/"
+    const val HISTORY_DETAIL = "api/history/{id}"
+    const val SAVE_HISTORY = "api/history/save"
 }

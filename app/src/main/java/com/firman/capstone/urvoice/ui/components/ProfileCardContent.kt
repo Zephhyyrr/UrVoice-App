@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -74,9 +75,9 @@ fun ProfileCardContent(
                             .data(profileImage)
                             .crossfade(true)
                             .build(),
-                        placeholder = painterResource(id = R.drawable.noimage),
-                        error = painterResource(id = R.drawable.noimage),
-                        contentDescription = "Profile Image",
+                        placeholder = painterResource(id = R.drawable.unknownperson),
+                        error = painterResource(id = R.drawable.unknownperson),
+                        contentDescription = stringResource(R.string.profile_image_desc),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -107,10 +108,10 @@ fun ProfileCardContent(
                     .padding(12.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit Profile",
+                    painter = painterResource(R.drawable.ic_pencil),
+                    contentDescription = stringResource(R.string.edit_profile_title),
                     tint = Color.Gray,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }

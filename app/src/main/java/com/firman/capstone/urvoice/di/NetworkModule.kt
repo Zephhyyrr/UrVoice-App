@@ -3,7 +3,9 @@ package com.firman.capstone.urvoice.di
 import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.firman.capstone.urvoice.BuildConfig
+import com.firman.capstone.urvoice.data.remote.service.AnalyzeService
 import com.firman.capstone.urvoice.data.remote.service.ArticleService
+import com.firman.capstone.urvoice.data.remote.service.HistoryService
 import com.firman.capstone.urvoice.data.remote.service.UserService
 import com.firman.capstone.urvoice.data.remote.service.LoginService
 import com.firman.capstone.urvoice.data.remote.service.RegisterService
@@ -85,5 +87,17 @@ object NetworkModule {
     @Provides
     fun provideSpeechService(retrofit: Retrofit): SpeechService {
         return retrofit.create(SpeechService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAnalyzeService(retrofit: Retrofit): AnalyzeService {
+        return retrofit.create(AnalyzeService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideHistoryService(retrofit: Retrofit): HistoryService {
+        return retrofit.create(HistoryService::class.java)
     }
 }

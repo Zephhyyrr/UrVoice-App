@@ -15,5 +15,11 @@ data class SpeechResponse(
     data class Data(
         @SerializedName("text")
         val text: String? = null,
+
+        @SerializedName("audioFileName")
+        val audioFileName: String? = null,
+
+        @SerializedName("audioPath")
+        val audioPath: String? = null
     )
 }

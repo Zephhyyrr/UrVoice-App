@@ -1,6 +1,7 @@
 package com.firman.capstone.urvoice.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,24 +24,25 @@ import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
 import com.firman.capstone.urvoice.ui.theme.textColor
-import com.firman.capstone.urvoice.utils.ImageUrlUtils
+import com.firman.capstone.urvoice.utils.MediaUrlUtils
 
 @Composable
-fun CardArticle(title: String, content: String, imageUrl: String) {
+fun CardArticle(title: String, content: String, imageUrl: String, onClick: () -> Unit) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .width(380.dp)
             .height(120.dp)
+            .clickable { onClick() }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxSize()
         ) {
             SubcomposeAsyncImage(
-                model = ImageUrlUtils.buildImageUrl(imageUrl),
-                contentDescription = "Article image",
+                model = MediaUrlUtils.buildMediaUrl(imageUrl),
+                contentDescription = stringResource(R.string.article_image_desc),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(120.dp),
@@ -88,7 +91,7 @@ fun CardArticle(title: String, content: String, imageUrl: String) {
 
                 Image(
                     painter = painterResource(R.drawable.arrow_right),
-                    contentDescription = "Arrow Icon",
+                    contentDescription = stringResource(R.string.article_arrow_desc),
                     modifier = Modifier
                         .size(24.dp)
                         .align(Alignment.CenterEnd),
@@ -106,7 +109,8 @@ fun CardArticlePreview() {
         CardArticle(
             title = "Sample Article Title",
             content = "This is a sample content for the article. It should be concise and informative.",
-            imageUrl = "https://example.com/sample-image.jpg"
+            imageUrl = "https://example.com/sample-image.jpg",
+            onClick = { /* Preview onClick */ },
         )
     }
 }

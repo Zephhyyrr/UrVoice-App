@@ -33,6 +33,9 @@ class SpeechViewModel @Inject constructor(
     private val _speechToTextState = MutableStateFlow<ResultState<SpeechResponse.Data>>(ResultState.Initial)
     val speechToTextState: StateFlow<ResultState<SpeechResponse.Data>> = _speechToTextState.asStateFlow()
 
+    private val _audioFileName = MutableStateFlow("")
+    val audioFileName: StateFlow<String> = _audioFileName.asStateFlow()
+
     private val _isRecording = MutableStateFlow(false)
     val isRecording: StateFlow<Boolean> = _isRecording.asStateFlow()
 
@@ -45,18 +48,18 @@ class SpeechViewModel @Inject constructor(
     private var mediaRecorder: MediaRecorder? = null
     private var audioFile: File? = null
 
-    internal fun startRecording() {
+    fun startRecording() {
         try {
             Log.d(TAG, "Starting recording...")
 
-            // Create audio file in app's internal cache directory
             val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val fileName = "AUDIO_$timestamp.3gp"
             audioFile = File(context.cacheDir, fileName)
 
+            _audioFileName.value = fileName
+
             Log.d(TAG, "Audio file path: ${audioFile?.absolutePath}")
 
-            // Initialize MediaRecorder with better error handling
             mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 MediaRecorder(context)
             } else {
@@ -78,6 +81,7 @@ class SpeechViewModel @Inject constructor(
                     _isRecording.value = true
                     _speechToTextState.value = ResultState.Initial
                     _convertedText.value = ""
+                    _errorMessage.value = null
 
                     Log.d(TAG, "Recording started successfully")
                 } catch (e: Exception) {
@@ -91,7 +95,6 @@ class SpeechViewModel @Inject constructor(
             _errorMessage.value = "Gagal memulai rekaman: ${e.message}"
             _isRecording.value = false
 
-            // Clean up on error
             try {
                 mediaRecorder?.release()
             } catch (releaseException: Exception) {
@@ -101,7 +104,7 @@ class SpeechViewModel @Inject constructor(
         }
     }
 
-    internal fun stopRecordingAndTranscribe() {
+    fun stopRecordingAndTranscribe() {
         try {
             Log.d(TAG, "Stopping recording...")
 
@@ -111,7 +114,6 @@ class SpeechViewModel @Inject constructor(
                     Log.d(TAG, "MediaRecorder stopped")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error stopping MediaRecorder", e)
-                    // Continue with release even if stop fails
                 }
 
                 try {
@@ -155,6 +157,11 @@ class SpeechViewModel @Inject constructor(
                         is ResultState.Success -> {
                             _convertedText.value = result.data.text ?: ""
                             _errorMessage.value = null
+                            // Update audioFileName from API response if available
+                            result.data.audioFileName?.let { filename ->
+                                _audioFileName.value = filename
+                                Log.d(TAG, "Updated filename from API: $filename")
+                            }
                             Log.d(TAG, "Transcription successful: ${result.data.text}")
                         }
                         is ResultState.Error -> {
@@ -170,6 +177,7 @@ class SpeechViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e(TAG, "Exception during transcription", e)
                 _speechToTextState.value = ResultState.Error(e.message ?: "Terjadi kesalahan saat transkripsi.")
+                _errorMessage.value = e.message ?: "Terjadi kesalahan saat transkripsi."
             }
         }
     }
@@ -180,6 +188,7 @@ class SpeechViewModel @Inject constructor(
         _convertedText.value = ""
         _errorMessage.value = null
         _isRecording.value = false
+        _audioFileName.value = ""
 
         // Clean up audio file
         audioFile?.let { file ->
@@ -203,7 +212,6 @@ class SpeechViewModel @Inject constructor(
         super.onCleared()
         Log.d(TAG, "ViewModel cleared, cleaning up...")
 
-        // Clean up MediaRecorder if still active
         try {
             mediaRecorder?.apply {
                 if (_isRecording.value) {
@@ -216,5 +224,17 @@ class SpeechViewModel @Inject constructor(
         }
 
         mediaRecorder = null
+
+        // Clean up audio file
+        audioFile?.let { file ->
+            try {
+                if (file.exists()) {
+                    file.delete()
+                    Log.d(TAG, "Audio file deleted in onCleared")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting audio file in onCleared", e)
+            }
+        }
     }
 }

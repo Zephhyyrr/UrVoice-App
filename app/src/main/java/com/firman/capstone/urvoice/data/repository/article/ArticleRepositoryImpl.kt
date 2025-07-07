@@ -30,7 +30,7 @@ class ArticleRepositoryImpl @Inject constructor(
         emit(ResultState.Error(e.message ?: "Unexpected error occurred"))
     }
 
-    override suspend fun getArticleById(id: Int): Flow<ResultState<List<ArticleResponse.Data>>> =
+    override suspend fun getArticleById(id: Int): Flow<ResultState<ArticleResponse.Data>> =
         flow {
             emit(ResultState.Loading)
 

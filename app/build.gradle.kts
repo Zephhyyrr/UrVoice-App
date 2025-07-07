@@ -21,7 +21,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
+        buildConfigField("String", "BASE_URL", "\"http://192.168.1.4:3000/\"")
     }
 
     buildTypes {
@@ -142,4 +142,8 @@ dependencies {
 
     // View Pager Onboarding
     implementation(libs.foundation.pager)
+
+    // live data
+    implementation (libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.runtime.livedata)
 }

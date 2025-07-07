@@ -8,13 +8,8 @@ import com.firman.capstone.urvoice.data.remote.models.UserResponse
 import com.firman.capstone.urvoice.data.remote.request.UpdateUserRequest
 import com.firman.capstone.urvoice.utils.ApiConstant
 import okhttp3.MultipartBody
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Part
+import retrofit2.Response
+import retrofit2.http.*
 
 interface UserService {
 
@@ -27,11 +22,12 @@ interface UserService {
         @Body request: UpdateUserRequest
     ): UserResponse
 
+    @Multipart
     @POST(ApiConstant.USER_PROFILE)
     suspend fun getUserProfile(
         @Header("Authorization") token: String,
-        @Part file: MultipartBody.Part
-    ): UserProfileResponse
+        @Part profileImage: MultipartBody.Part
+    ): Response<UserProfileResponse>
 
     @POST(ApiConstant.USER_LOGOUT)
     suspend fun logout(@Header("Authorization") token: String): UserLogoutResponse

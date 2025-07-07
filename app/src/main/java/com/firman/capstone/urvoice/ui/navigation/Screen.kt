@@ -23,10 +23,27 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
 
     @Serializable
+    object Analyze: Screen("analyze")
+
+    @Serializable
     object History : Screen("history")
 
     @Serializable
+    data class HistoryDetail(val id: Int) : Screen("history_detail/$id") {
+        fun createRoute() = "history_detail/$id"
+    }
+
+    @Serializable
     object Profile : Screen("profile")
+
+    @Serializable
+    object EditProfile : Screen("editProfile")
+
+    @Serializable
+    object ImageProfilePreview : Screen("image_profile_preview")
+
+    @Serializable
+    object Record : Screen("record")
 
     @Serializable
     object SpeechToText: Screen("speech-to-text")
@@ -35,7 +52,4 @@ sealed class Screen(val route: String) {
     data class Article(val id: String) : Screen("article/{id}") {
         fun articleRoute() = "article/$id"
     }
-
-    @Serializable
-    object Main : Screen("main")
 }
