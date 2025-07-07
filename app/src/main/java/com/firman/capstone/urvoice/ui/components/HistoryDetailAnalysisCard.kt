@@ -5,7 +5,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import com.firman.capstone.urvoice.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.firman.capstone.urvoice.data.remote.models.HistoryResponse
@@ -24,10 +25,10 @@ fun HistoryDetailAnalysisCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Grammar Analysis:",
-                fontSize = 14.sp,
+                text = stringResource(R.string.grammar_analysis_title),
+                fontSize = 12.sp,
                 fontFamily = PoppinsSemiBold,
-                color = primaryColor,
+                color = textColor,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
@@ -51,14 +52,14 @@ private fun AnalysisItem(
     Text(
         text = "$label:",
         fontSize = 12.sp,
-        color = Color.Gray,
-        fontFamily = PoppinsMedium,
+        color = textColor,
+        fontFamily = PoppinsSemiBold,
     )
     Text(
         text = text ?: "No $label provided",
-        fontSize = 14.sp,
+        fontSize = 12.sp,
         fontFamily = PoppinsRegular,
-        color = if (highlight) primaryColor else Color.Black,
+        color = if (highlight) textColor else textColor,
         modifier = Modifier.padding(top = 2.dp)
     )
 }

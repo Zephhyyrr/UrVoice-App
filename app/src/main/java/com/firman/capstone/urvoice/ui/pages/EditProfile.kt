@@ -1,7 +1,12 @@
 package com.firman.capstone.urvoice.ui.pages
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -9,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +30,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.*
@@ -32,6 +39,7 @@ import com.firman.capstone.urvoice.data.remote.models.CurrentUserResponse
 import com.firman.capstone.urvoice.ui.components.CustomAlertDialog
 import com.firman.capstone.urvoice.ui.theme.*
 import com.firman.capstone.urvoice.ui.viewmodel.ProfileViewModel
+import com.firman.capstone.urvoice.utils.GalleryUtils
 import com.firman.capstone.urvoice.utils.MediaUrlUtils
 import com.firman.capstone.urvoice.utils.ResultState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.*
@@ -43,6 +51,7 @@ fun EditProfileScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onSaveClick: () -> Unit = {},
+    onNavigateToImagePreview: (Uri) -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val currentUserState by viewModel.currentUserProfile.collectAsState()
@@ -56,6 +65,46 @@ fun EditProfileScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showSuccessDialog by remember { mutableStateOf(false) }
+    var showImagePermissionDialog by remember { mutableStateOf(false) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let { selectedUri ->
+                Log.d("EditProfileScreen", "Selected URI: $selectedUri")
+
+                try {
+                    // More robust image validation
+                    val isValidImage = GalleryUtils.isImageFile(selectedUri, context)
+                    Log.d("EditProfileScreen", "Is valid image: $isValidImage")
+
+                    if (isValidImage) {
+                        Log.d("EditProfileScreen", "Navigating to image preview")
+                        onNavigateToImagePreview(selectedUri)
+                    } else {
+                        Log.d("EditProfileScreen", "Invalid image file")
+                        showImagePermissionDialog = true
+                    }
+                } catch (e: Exception) {
+                    Log.e("EditProfileScreen", "Error processing selected image", e)
+                    showImagePermissionDialog = true
+                }
+            } ?: run {
+                Log.d("EditProfileScreen", "No URI selected")
+            }
+        }
+    )
+
+    rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let { selectedUri ->
+                Log.d("EditProfileScreen", "Selected URI: $selectedUri")
+                onNavigateToImagePreview(selectedUri)
+            }
+        }
+    )
+
     val imageUrl = (currentUserState as? ResultState.Success)?.data?.data?.profileImage?.let {
         MediaUrlUtils.buildMediaUrl(it.toString())
     } ?: ""
@@ -107,17 +156,51 @@ fun EditProfileScreen(
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
 
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = "Profile Image",
+                Box(
+                    modifier = Modifier
+                        .size(92.dp)
+                        .align(Alignment.CenterHorizontally),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
                         modifier = Modifier
                             .size(92.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop,
-                        placeholder = painterResource(id = R.drawable.unknownperson),
-                        error = painterResource(id = R.drawable.unknownperson)
-                    )
+                            .clip(CircleShape)
+                            .border(width = 2.dp, color = primaryColor, shape = CircleShape)
+                            .clickable { galleryLauncher.launch("image/*") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = "Profile Image",
+                            modifier = Modifier
+                                .size(92.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop,
+                            placeholder = painterResource(id = R.drawable.unknownperson),
+                            error = painterResource(id = R.drawable.unknownperson)
+                        )
+                    }
+
+                    // Edit Icon
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .align(Alignment.BottomEnd)
+                            .offset(x = (-4).dp, y = (-4).dp)
+                            .clip(CircleShape)
+                            .background(primaryColor)
+                            .clickable { galleryLauncher.launch("image/*") }
+                            .zIndex(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(R.string.edit_profile_image),
+                            tint = whiteColor,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -363,6 +446,7 @@ fun EditProfileScreen(
             }
         }
     }
+
     if (showSuccessDialog) {
         Dialog(onDismissRequest = { showSuccessDialog = false }) {
             CustomAlertDialog(
@@ -378,5 +462,19 @@ fun EditProfileScreen(
                 }
             )
         }
+    }
+
+    if (showImagePermissionDialog) {
+        CustomAlertDialog(
+            title = stringResource(R.string.error),
+            message = stringResource(R.string.invalid_image_file),
+            positiveText = stringResource(R.string.ok),
+            onConfirm = {
+                showImagePermissionDialog = false
+            },
+            onDismiss = {
+                showImagePermissionDialog = false
+            }
+        )
     }
 }

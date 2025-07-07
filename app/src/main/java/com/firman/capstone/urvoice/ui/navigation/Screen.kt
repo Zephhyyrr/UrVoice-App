@@ -40,6 +40,9 @@ sealed class Screen(val route: String) {
     object EditProfile : Screen("editProfile")
 
     @Serializable
+    object ImageProfilePreview : Screen("image_profile_preview")
+
+    @Serializable
     object Record : Screen("record")
 
     @Serializable

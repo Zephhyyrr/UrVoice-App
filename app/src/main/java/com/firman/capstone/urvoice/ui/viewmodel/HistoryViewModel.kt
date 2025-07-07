@@ -119,13 +119,6 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun resetState() {
-        Log.d(TAG, "Resetting all states")
-        _saveHistoryState.value = ResultState.Initial
-        _historyListState.value = ResultState.Initial
-        _historyDetailState.value = ResultState.Initial
-    }
-
     fun resetSaveState() {
         Log.d(TAG, "Resetting save state only")
         _saveHistoryState.value = ResultState.Initial

@@ -145,4 +145,5 @@ dependencies {
 
     // live data
     implementation (libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.runtime.livedata)
 }

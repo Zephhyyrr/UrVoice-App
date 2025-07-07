@@ -31,7 +31,7 @@ data class HistoryResponse(
         @SerializedName("updatedAt")
         val updatedAt: String? = null,
 
-        @SerializedName("grammar_analysis")
+        @SerializedName("grammarAnalysis")
         val grammarAnalysis: List<GrammarAnalysis>? = null
     )
 

@@ -29,6 +29,7 @@ lottieCompose = "5.2.0"
 pagingRuntimeVersion = "3.3.6"
 retrofit = "2.9.0"
 roomRuntime = "2.7.0"
+runtimeLivedata = "1.8.3"
 rxandroid = "3.0.2"
 rxjava = "3.1.6"
 ssjetpackcomposeprogressbutton = "1.1.0"
@@ -54,6 +55,7 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRunt
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "roomRuntime" }
+androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtimeLivedata" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }

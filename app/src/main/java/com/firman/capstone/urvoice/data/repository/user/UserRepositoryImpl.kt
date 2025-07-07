@@ -1,5 +1,6 @@
 package com.firman.capstone.urvoice.data.repository.user
 
+import android.util.Log
 import com.firman.capstone.urvoice.data.local.datastore.AuthPreferences
 import com.firman.capstone.urvoice.data.remote.models.CurrentUserResponse
 import com.firman.capstone.urvoice.data.remote.models.DeleteUserResponse
@@ -34,7 +35,7 @@ class UserRepositoryImpl @Inject constructor(
 
         val response = userService.getCurrentUser("Bearer $token")
 
-        if (response.success == true) {
+        if (response.success) {
             emit(ResultState.Success(response))
         } else {
             emit(ResultState.Error(response.message ?: "Failed to fetch user"))
@@ -75,10 +76,15 @@ class UserRepositoryImpl @Inject constructor(
 
         val response = userService.getUserProfile("Bearer $token", file)
 
-        if (response.success == true) {
-            emit(ResultState.Success(response))
+        if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null && body.status == true) {
+                emit(ResultState.Success(body))
+            } else {
+                emit(ResultState.Error(body?.message ?: "Upload failed"))
+            }
         } else {
-            emit(ResultState.Error(response.message ?: "Failed to upload profile"))
+            emit(ResultState.Error("Upload failed: ${response.code()}"))
         }
     }.catch { e ->
         emit(ResultState.Error(handleException(e)))

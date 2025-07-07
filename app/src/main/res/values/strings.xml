@@ -108,4 +108,18 @@
     <string name="original_paragraph_title">Original Paragraph:</string>
     <string name="no_content_available">No Content</string>
     <string name="nodata_history_title">Belum ada history</string>
+    <string name="error">Error</string>
+    <string name="invalid_image_file">Gambar Invalid</string>
+    <string name="edit_profile_image">edit profile</string>
+    <string name="image_preview_description">Image Preview</string>
+    <string name="preview_image">Preview Image</string>
+    <string name="invalid_image_format">Invalid Format</string>
+    <string name="image_too_large">Gambar terlalu besar</string>
+    <string name="image_processing_error">Gambar gagal</string>
+    <string name="upload_failed">Upload Gagal</string>
+    <string name="uploading">Uploading</string>
+    <string name="upload_success">Upload Berhasil</string>
+    <string name="retry_upload">Ulang upload</string>
+    <string name="upload_image_success">Upload gambar berhasil</string>
+    <string name="upload_image">Upload gambar</string>
 </resources>

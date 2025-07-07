@@ -6,8 +6,8 @@ data class UserProfileResponse(
     @SerializedName("message")
     val message: String? = null,
 
-    @SerializedName("success")
-    val success: Boolean? = false,
+    @SerializedName("status")
+    val status: Boolean? = false,
 
     @SerializedName("data")
     val data: Data? = null

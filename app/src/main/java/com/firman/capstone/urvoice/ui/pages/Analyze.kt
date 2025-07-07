@@ -46,7 +46,7 @@ fun AnalyzeScreen(
     text: String,
     audioFileName: String,
     onBackClick: () -> Unit,
-    onNavigateToHistory: () -> Unit = {},
+    onNavigateToHistory:  () -> Unit = {},
     viewModel: AnalyzeViewModel = hiltViewModel(),
     historyViewModel: HistoryViewModel = hiltViewModel()
 ) {
@@ -66,8 +66,10 @@ fun AnalyzeScreen(
                 Log.d("AnalyzeScreen", "Save successful, navigating to history")
                 analyzeStateButton = SSButtonState.SUCCESS
                 isSaving = false
-                delay(1000)
-                onNavigateToHistory()
+                coroutineScope.launch {
+                    delay(1000)
+                    onNavigateToHistory()
+                }
             }
             is ResultState.Error -> {
                 Log.e("AnalyzeScreen", "Save failed: ${(saveHistoryState as ResultState.Error).errorMessage}")

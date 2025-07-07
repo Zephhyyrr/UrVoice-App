@@ -74,8 +74,8 @@ fun ProfileCardContent(
                             .data(profileImage)
                             .crossfade(true)
                             .build(),
-                        placeholder = painterResource(id = R.drawable.noimage),
-                        error = painterResource(id = R.drawable.noimage),
+                        placeholder = painterResource(id = R.drawable.unknownperson),
+                        error = painterResource(id = R.drawable.unknownperson),
                         contentDescription = "Profile Image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()

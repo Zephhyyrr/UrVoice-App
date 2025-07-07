@@ -52,7 +52,6 @@ fun HistoryCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

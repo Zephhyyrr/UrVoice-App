@@ -116,11 +116,15 @@ fun HistoryScreen(
                         }
                     } else {
                         LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(top = 8.dp, bottom = 80.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
+                            contentPadding = PaddingValues(
+                                top = 8.dp,
+                                bottom = innerPadding.calculateBottomPadding() + 120.dp,
+                                start = 15.dp,
+                                end = 15.dp
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ){
                             items(
                                 items = historyList,
                                 key = { it.id }
