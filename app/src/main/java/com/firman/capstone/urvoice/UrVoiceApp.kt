@@ -205,27 +205,30 @@ fun UrVoiceRootApp(
                             launchSingleTop = true
                         }
 
-                        navController.currentBackStackEntry?.savedStateHandle?.set("refreshHistory", true)
+                        navController.currentBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("refreshHistory", true)
+
                         navController.getBackStackEntry(Screen.Home.route)
                             .savedStateHandle["refreshHome"] = true
                     }
+
                 )
             }
 
             composable(Screen.History.route) {
                 val viewModel: HistoryViewModel = hiltViewModel()
 
-                val shouldRefresh = navController.currentBackStackEntry
+                val currentEntry by navController.currentBackStackEntryAsState()
+                val refreshTrigger = currentEntry
                     ?.savedStateHandle
                     ?.getLiveData<Boolean>("refreshHistory")
                     ?.observeAsState()
 
-                LaunchedEffect(shouldRefresh?.value) {
-                    if (shouldRefresh?.value == true) {
+                LaunchedEffect(refreshTrigger?.value) {
+                    if (refreshTrigger?.value == true) {
                         viewModel.getAllHistory()
-                        navController.currentBackStackEntry
-                            ?.savedStateHandle
-                            ?.set("refreshHistory", false)
+                        currentEntry?.savedStateHandle?.set("refreshHistory", false)
                     }
                 }
 
@@ -236,6 +239,7 @@ fun UrVoiceRootApp(
                     }
                 )
             }
+
             composable(
                 route = "history_detail/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.IntType })
