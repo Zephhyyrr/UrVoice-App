@@ -17,7 +17,7 @@ object GalleryUtils {
 
     private fun createCustomTempFile(context: Context): File {
         val storageDir: File? = context.getExternalFilesDir(null)
-        return File.createTempFile("temp_image", ".jpg", storageDir)
+        return File.createTempFile("temp_image", ".jpg, .png, jpeg, JPG, .PNG, .JPEG", storageDir)
     }
 
     fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {

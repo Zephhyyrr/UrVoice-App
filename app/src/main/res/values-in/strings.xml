@@ -74,7 +74,7 @@
     <string name="no_correction_available">Tidak ada koreksi tersedia</string>
     <string name="grammar_analysis_title">Analisis Tata Bahasa:</string>
     <string name="analisis_title">Analisis</string>
-    <string name="button_save_analyze">Simpan Hasil Analisis</string>
+    <string name="button_save_analyze">Simpan</string>
     <string name="menu_history_title">Riwayat</string>
     <string name="go_detail_description">Lihat Detail</string>
     <string name="loading_audio">Memutar...</string>
