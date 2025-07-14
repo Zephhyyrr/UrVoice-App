@@ -132,4 +132,5 @@
     <string name="retry_record_title">重试录音</string>
     <string name="sign_title">提升你的英语口语自信</string>
     <string name="sign_desc">立即加入，练习口语技巧，让英语成为你的强项！</string>
+    <string name="link_article">文章链接</string>
 </resources>

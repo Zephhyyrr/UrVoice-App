@@ -23,7 +23,10 @@ data class ArticleResponse(
         val content: String? = null,
 
         @SerializedName("imageUrl")
-        val image: String? = null
+        val image: String? = null,
+
+        @SerializedName("urlArticle")
+        val urlArticle: String? = null,
     )
 
     data class meta(

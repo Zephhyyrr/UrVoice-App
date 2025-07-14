@@ -74,7 +74,7 @@
     <string name="no_correction_available">No correction available</string>
     <string name="grammar_analysis_title">Grammar Analysis:</string>
     <string name="analisis_title">Analysis</string>
-    <string name="button_save_analyze">Save Analysis</string>
+    <string name="button_save_analyze">Save</string>
     <string name="menu_history_title">History</string>
     <string name="go_detail_description">Go to detail</string>
     <string name="loading_audio">Playing...</string>
@@ -131,4 +131,5 @@
     <string name="retry_record_title">Retry Recording</string>
     <string name="sign_title">Let’s Boost Your English Speaking Confidence</string>
     <string name="sign_desc">Join now to practice your speaking skills and make English your strength!</string>
+    <string name="link_article">Link Article</string>
 </resources>

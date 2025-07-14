@@ -132,4 +132,5 @@
     <string name="retry_record_title">إعادة التسجيل</string>
     <string name="sign_title">لنُعزز ثقتك في التحدث بالإنجليزية</string>
     <string name="sign_desc">انضم الآن لتدريب مهارات التحدث واجعل من الإنجليزية قوتك!</string>
+    <string name="link_article">رابط المقال</string>
 </resources>
