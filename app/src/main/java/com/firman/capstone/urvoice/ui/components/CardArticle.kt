@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,12 +25,14 @@ import com.firman.capstone.urvoice.ui.theme.PoppinsRegular
 import com.firman.capstone.urvoice.ui.theme.PoppinsSemiBold
 import com.firman.capstone.urvoice.ui.theme.UrVoiceTheme
 import com.firman.capstone.urvoice.ui.theme.textColor
+import com.firman.capstone.urvoice.ui.theme.whiteColor
 import com.firman.capstone.urvoice.utils.MediaUrlUtils
 
 @Composable
 fun CardArticle(title: String, content: String, imageUrl: String, onClick: () -> Unit) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = whiteColor),
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .width(380.dp)
